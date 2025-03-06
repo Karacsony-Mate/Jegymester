@@ -1,0 +1,6 @@
+@Jegymester.Api_HostAddress = http://localhost:5023
+
+GET {{Jegymester.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
