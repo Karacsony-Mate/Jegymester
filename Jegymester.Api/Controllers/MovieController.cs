@@ -38,7 +38,7 @@ public class MoviesController : ControllerBase
 
     // ✅ Új film hozzáadása (Admin)
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateMovie([FromBody] MovieCreateDto movieDto)
     {
         var newMovie = await _movieService.CreateMovieAsync(movieDto);
@@ -47,7 +47,7 @@ public class MoviesController : ControllerBase
 
     // ✅ Film módosítása (Admin)
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateMovie(int id, [FromBody] MovieUpdateDto movieDto)
     {
         var updatedMovie = await _movieService.UpdateMovieAsync(id, movieDto);
@@ -60,7 +60,7 @@ public class MoviesController : ControllerBase
 
     // ✅ Film törlése (Admin)
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteMovie(int id)
     {
         var success = await _movieService.DeleteMovieAsync(id);

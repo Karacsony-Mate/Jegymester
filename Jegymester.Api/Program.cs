@@ -2,6 +2,7 @@ using Jegymester.DataContext.Context;
 using Jegymester.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
