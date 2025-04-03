@@ -10,13 +10,13 @@ using Jegymester.DataContext.Dtos;
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
-
+    // Konstruktor
     public MoviesController(IMovieService movieService)
     {
         _movieService = movieService;
     }
 
-    // ✅ Összes film listázása
+    // Összes film listázása
     [HttpGet]
     public async Task<IActionResult> GetMovies()
     {
@@ -24,7 +24,7 @@ public class MoviesController : ControllerBase
         return Ok(movies);
     }
 
-    // ✅ Egy adott film lekérdezése
+    // Egy adott film lekérdezése
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMovie(int id)
     {
@@ -36,7 +36,7 @@ public class MoviesController : ControllerBase
         return Ok(movie);
     }
 
-    // ✅ Új film hozzáadása (Admin)
+    // Új film hozzáadása (Admin)
     [HttpPost]
     // [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateMovie([FromBody] MovieCreateDto movieDto)
@@ -45,7 +45,7 @@ public class MoviesController : ControllerBase
         return CreatedAtAction(nameof(GetMovie), new { id = newMovie.Id }, newMovie);
     }
 
-    // ✅ Film módosítása (Admin)
+    // Film módosítása (Admin)
     [HttpPut("{id}")]
     // [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateMovie(int id, [FromBody] MovieUpdateDto movieDto)
@@ -58,7 +58,7 @@ public class MoviesController : ControllerBase
         return Ok(updatedMovie);
     }
 
-    // ✅ Film törlése (Admin)
+    // Film törlése (Admin)
     [HttpDelete("{id}")]
     // [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteMovie(int id)

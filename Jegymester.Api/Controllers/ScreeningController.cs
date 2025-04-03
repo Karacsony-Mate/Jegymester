@@ -16,7 +16,7 @@ public class ScreeningsController : ControllerBase
         _screeningService = screeningService;
     }
 
-    // ✅ Összes vetítés listázása
+    // Összes vetítés listázása
     [HttpGet]
     public async Task<IActionResult> GetScreenings()
     {
@@ -24,7 +24,7 @@ public class ScreeningsController : ControllerBase
         return Ok(screenings);
     }
 
-    // ✅ Egy adott vetítés lekérdezése
+    // Egy adott vetítés lekérdezése
     [HttpGet("{id}")]
     public async Task<IActionResult> GetScreening(int id)
     {
@@ -36,18 +36,18 @@ public class ScreeningsController : ControllerBase
         return Ok(screening);
     }
 
-    // ✅ Új vetítés létrehozása (Admin)
+    // Új vetítés létrehozása (Admin)
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateScreening([FromBody] ScreeningCreateDto screeningDto)
     {
         var newScreening = await _screeningService.CreateScreeningAsync(screeningDto);
         return CreatedAtAction(nameof(GetScreening), new { id = newScreening.Id }, newScreening);
     }
 
-    // ✅ Vetítés módosítása (Admin)
+    // Vetítés módosítása (Admin)
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateScreening(int id, [FromBody] ScreeningUpdateDto screeningDto)
     {
         var updatedScreening = await _screeningService.UpdateScreeningAsync(id, screeningDto);
@@ -58,9 +58,9 @@ public class ScreeningsController : ControllerBase
         return Ok(updatedScreening);
     }
 
-    // ✅ Vetítés törlése (Admin)
+    // Vetítés törlése (Admin)
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteScreening(int id)
     {
         var success = await _screeningService.DeleteScreeningAsync(id);
