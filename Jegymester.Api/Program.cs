@@ -1,8 +1,6 @@
 using Jegymester.DataContext.Context;
 using Jegymester.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,12 +19,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add services to the container.
-//builder.Services.AddScoped<IMovieService, orig_MovieService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IScreeningService, ScreeningService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

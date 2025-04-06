@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Jegymester.Services;
 using Jegymester.DataContext.Dtos;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Jegymester.Controllers
 {
@@ -35,11 +33,75 @@ namespace Jegymester.Controllers
             return Ok(ticket);
         }
 
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<TicketDto>>> GetTicketsByUserId(int userId)
+        {
+            var tickets = await _ticketService.GetTicketsByUserIdAsync(userId);
+            return Ok(tickets);
+        }
+
         [HttpPost]
         public async Task<ActionResult<TicketDto>> CreateTicket([FromBody] TicketDto ticketDto)
         {
             var createdTicket = await _ticketService.CreateTicketAsync(ticketDto);
             return CreatedAtAction(nameof(GetTicket), new { id = createdTicket.Id }, createdTicket);
+        }
+
+        [HttpPost("purchase")]
+        public async Task<ActionResult<TicketDto>> PurchaseTicket([FromBody] TicketPurchaseDto ticketPurchaseDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var createdTicket = await _ticketService.PurchaseTicketAsync(ticketPurchaseDto);
+                return CreatedAtAction(nameof(GetTicket), new { id = createdTicket.Id }, createdTicket);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("confirm/{id}")]
+        public async Task<IActionResult> ConfirmTicket(int id)
+        {
+            var confirmed = await _ticketService.ConfirmTicketAsync(id);
+            if (!confirmed)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        [HttpPost("purchase-offline")]
+        public async Task<ActionResult<TicketDto>> PurchaseOfflineTicket([FromBody] TicketPurchaseOfflineDto ticketPurchaseOfflineDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var createdTicket = await _ticketService.PurchaseOfflineTicketAsync(ticketPurchaseOfflineDto);
+                return CreatedAtAction(nameof(GetTicket), new { id = createdTicket.Id }, createdTicket);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
@@ -56,12 +118,19 @@ namespace Jegymester.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(int id)
         {
-            var deleted = await _ticketService.DeleteTicketAsync(id);
-            if (!deleted)
+            try
             {
-                return NotFound();
+                var deleted = await _ticketService.DeleteTicketAsync(id);
+                if (!deleted)
+                {
+                    return NotFound();
+                }
+                return NoContent();
             }
-            return NoContent();
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

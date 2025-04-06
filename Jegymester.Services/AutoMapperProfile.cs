@@ -15,21 +15,22 @@ namespace Jegymester.Services
             CreateMap<UserUpdateDto, User>();
 
             // Movie Mappings
-            CreateMap<MovieResponseDto, Movie>();
+            CreateMap<Movie, MovieDto>().ReverseMap();
             CreateMap<MovieCreateDto, Movie>();
             CreateMap<MovieUpdateDto, Movie>();
             
             // Screening Mappings
-            CreateMap<ScreeningResponseDto, Screening>();
+            CreateMap<Screening, ScreeningDto>().ReverseMap();
             CreateMap<ScreeningCreateDto, Screening>();
             CreateMap<ScreeningUpdateDto, Screening>();
             
             // Ticket Mappings
             CreateMap<Ticket, TicketDto>().ReverseMap();
             CreateMap<TicketPurchaseDto, Ticket>();
-            
-            // Payment Mappings
-            CreateMap<Payment, PaymentDto>().ReverseMap();
+            CreateMap<TicketPurchaseOfflineDto, Ticket>();
+
+            // Roles Mappings
+            CreateMap<Role, RoleDto>().ReverseMap();
         }
     }
 }

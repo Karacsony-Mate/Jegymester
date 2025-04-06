@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Jegymester.DataContext.Dtos;
 using Jegymester.DataContext.Context;
 using Jegymester.DataContext.Entities;
@@ -7,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 public interface IMovieService
 {
-    Task<IEnumerable<MovieResponseDto>> GetAllMoviesAsync();
-    Task<MovieResponseDto> GetMovieByIdAsync(int id);
-    Task<MovieResponseDto> CreateMovieAsync(MovieCreateDto movieDto);
-    Task<MovieResponseDto> UpdateMovieAsync(int id, MovieUpdateDto movieDto);
+    Task<IEnumerable<MovieDto>> GetAllMoviesAsync();
+    Task<MovieDto> GetMovieByIdAsync(int id);
+    Task<MovieDto> CreateMovieAsync(MovieCreateDto movieDto);
+    Task<MovieDto> UpdateMovieAsync(int id, MovieUpdateDto movieDto);
     Task<bool> DeleteMovieAsync(int id);
 }
 
@@ -23,10 +21,10 @@ public class MovieService : IMovieService
         _context = context;
     }
 
-    public async Task<IEnumerable<MovieResponseDto>> GetAllMoviesAsync()
+    public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
     {
         return await _context.Movies
-            .Select(m => new MovieResponseDto
+            .Select(m => new MovieDto
             {
                 Id = m.Id,
                 Title = m.Title,
@@ -37,12 +35,12 @@ public class MovieService : IMovieService
             .ToListAsync();
     }
 
-    public async Task<MovieResponseDto> GetMovieByIdAsync(int id)
+    public async Task<MovieDto> GetMovieByIdAsync(int id)
     {
         var movie = await _context.Movies.FindAsync(id);
         if (movie == null) return null;
 
-        return new MovieResponseDto
+        return new MovieDto
         {
             Id = movie.Id,
             Title = movie.Title,
@@ -52,7 +50,7 @@ public class MovieService : IMovieService
         };
     }
 
-    public async Task<MovieResponseDto> CreateMovieAsync(MovieCreateDto movieDto)
+    public async Task<MovieDto> CreateMovieAsync(MovieCreateDto movieDto)
     {
         var movie = new Movie
         {
@@ -65,7 +63,7 @@ public class MovieService : IMovieService
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
 
-        return new MovieResponseDto
+        return new MovieDto
         {
             Id = movie.Id,
             Title = movie.Title,
@@ -75,7 +73,7 @@ public class MovieService : IMovieService
         };
     }
 
-    public async Task<MovieResponseDto> UpdateMovieAsync(int id, MovieUpdateDto movieDto)
+    public async Task<MovieDto> UpdateMovieAsync(int id, MovieUpdateDto movieDto)
     {
         var movie = await _context.Movies.FindAsync(id);
         if (movie == null) return null;
@@ -87,7 +85,7 @@ public class MovieService : IMovieService
 
         await _context.SaveChangesAsync();
 
-        return new MovieResponseDto
+        return new MovieDto
         {
             Id = movie.Id,
             Title = movie.Title,
@@ -101,6 +99,9 @@ public class MovieService : IMovieService
     {
         var movie = await _context.Movies.FindAsync(id);
         if (movie == null) return false;
+
+        var hasScreenings = await _context.Screenings.AnyAsync(s => s.MovieId == id);
+        if (hasScreenings) return false;
 
         _context.Movies.Remove(movie);
         await _context.SaveChangesAsync();

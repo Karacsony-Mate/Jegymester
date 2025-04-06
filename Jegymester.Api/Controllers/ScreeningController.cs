@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Jegymester.Services;
 using Jegymester.DataContext.Dtos;
 
 [Route("api/screenings")]
@@ -16,58 +12,102 @@ public class ScreeningsController : ControllerBase
         _screeningService = screeningService;
     }
 
-    // Összes vetítés listázása
     [HttpGet]
     public async Task<IActionResult> GetScreenings()
     {
-        var screenings = await _screeningService.GetAllScreeningsAsync();
-        return Ok(screenings);
+        try
+        {
+            var screenings = await _screeningService.GetAllScreeningsAsync();
+            return Ok(screenings);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
-    // Egy adott vetítés lekérdezése
     [HttpGet("{id}")]
     public async Task<IActionResult> GetScreening(int id)
     {
-        var screening = await _screeningService.GetScreeningByIdAsync(id);
-        if (screening == null)
+        try
         {
-            return NotFound(new { message = "Vetítés nem található" });
+            var screening = await _screeningService.GetScreeningByIdAsync(id);
+            if (screening == null)
+            {
+                return NotFound(new { message = "Vetítés nem található!" });
+            }
+            return Ok(screening);
         }
-        return Ok(screening);
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
-    // Új vetítés létrehozása (Admin)
     [HttpPost]
     //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateScreening([FromBody] ScreeningCreateDto screeningDto)
     {
-        var newScreening = await _screeningService.CreateScreeningAsync(screeningDto);
-        return CreatedAtAction(nameof(GetScreening), new { id = newScreening.Id }, newScreening);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var newScreening = await _screeningService.CreateScreeningAsync(screeningDto);
+            return CreatedAtAction(nameof(GetScreening), new { id = newScreening.Id }, newScreening);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
-    // Vetítés módosítása (Admin)
     [HttpPut("{id}")]
     //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateScreening(int id, [FromBody] ScreeningUpdateDto screeningDto)
     {
-        var updatedScreening = await _screeningService.UpdateScreeningAsync(id, screeningDto);
-        if (updatedScreening == null)
+        if (!ModelState.IsValid)
         {
-            return NotFound(new { message = "Vetítés nem található" });
+            return BadRequest(ModelState);
         }
-        return Ok(updatedScreening);
+
+        try
+        {
+            var updatedScreening = await _screeningService.UpdateScreeningAsync(id, screeningDto);
+            if (updatedScreening == null)
+            {
+                return NotFound(new { message = "Vetítés nem található!" });
+            }
+            return Ok(updatedScreening);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
-    // Vetítés törlése (Admin)
     [HttpDelete("{id}")]
     //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteScreening(int id)
     {
-        var success = await _screeningService.DeleteScreeningAsync(id);
-        if (!success)
+        try
         {
-            return NotFound(new { message = "Vetítés nem található vagy nem törölhető" });
+            var success = await _screeningService.DeleteScreeningAsync(id);
+            if (!success)
+            {
+                return NotFound(new { message = "Vetítés nem található vagy nem törölhető!" });
+            }
+            return NoContent();
         }
-        return NoContent();
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 }

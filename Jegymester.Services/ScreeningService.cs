@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
 using Jegymester.DataContext.Context;
 using Jegymester.DataContext.Dtos;
@@ -8,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 public interface IScreeningService
 {
-    Task<IEnumerable<ScreeningResponseDto>> GetAllScreeningsAsync();
-    Task<ScreeningResponseDto> GetScreeningByIdAsync(int id);
-    Task<ScreeningResponseDto> CreateScreeningAsync(ScreeningCreateDto screeningDto);
-    Task<ScreeningResponseDto> UpdateScreeningAsync(int id, ScreeningUpdateDto screeningDto);
+    Task<IEnumerable<ScreeningDto>> GetAllScreeningsAsync();
+    Task<ScreeningDto> GetScreeningByIdAsync(int id);
+    Task<ScreeningDto> CreateScreeningAsync(ScreeningCreateDto screeningDto);
+    Task<ScreeningDto> UpdateScreeningAsync(int id, ScreeningUpdateDto screeningDto);
     Task<bool> DeleteScreeningAsync(int id);
 }
 
@@ -26,47 +24,53 @@ public class ScreeningService : IScreeningService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<ScreeningResponseDto>> GetAllScreeningsAsync()
+    public async Task<IEnumerable<ScreeningDto>> GetAllScreeningsAsync()
     {
         var screenings = await _context.Screenings
             .Include(s => s.Movie)
             .ToListAsync();
 
-        return screenings.Select(s => new ScreeningResponseDto
+        return screenings.Select(s => new ScreeningDto
         {
             Id = s.Id,
             MovieId = s.MovieId,
             MovieTitle = s.Movie.Title,
-            ScreeningTime = s.ScreeningTime,
-            AvailableSeats = s.TotalSeats
+            DateTime = s.DateTime,
+            Location = s.Location,
+            AvailableSeats = s.AvaliableSeats
         });
     }
 
-    public async Task<ScreeningResponseDto> GetScreeningByIdAsync(int id)
+    public async Task<ScreeningDto> GetScreeningByIdAsync(int id)
     {
         var screening = await _context.Screenings
             .Include(s => s.Movie)
             .FirstOrDefaultAsync(s => s.Id == id);
-        
+
         if (screening == null) return null;
 
-        return new ScreeningResponseDto
+        return new ScreeningDto
         {
             Id = screening.Id,
             MovieId = screening.MovieId,
             MovieTitle = screening.Movie.Title,
-            ScreeningTime = screening.ScreeningTime,
-            AvailableSeats = screening.TotalSeats
+            DateTime = screening.DateTime,
+            Location = screening.Location,
+            AvailableSeats = screening.AvaliableSeats
         };
     }
 
-    public async Task<ScreeningResponseDto> CreateScreeningAsync(ScreeningCreateDto screeningDto)
+    public async Task<ScreeningDto> CreateScreeningAsync(ScreeningCreateDto screeningDto)
     {
+        var movie = await _context.Movies.FindAsync(screeningDto.MovieId);
+        if (movie == null) throw new KeyNotFoundException("Movie not found.");
+
         var screening = new Screening
         {
             MovieId = screeningDto.MovieId,
-            ScreeningTime = screeningDto.ScreeningTime,
-            TotalSeats = screeningDto.TotalSeats
+            DateTime = screeningDto.DateTime,
+            Location = screeningDto.Location,
+            AvaliableSeats = screeningDto.AvaliableSeats
         };
 
         _context.Screenings.Add(screening);
@@ -75,16 +79,19 @@ public class ScreeningService : IScreeningService
         return await GetScreeningByIdAsync(screening.Id);
     }
 
-    public async Task<ScreeningResponseDto> UpdateScreeningAsync(int id, ScreeningUpdateDto screeningDto)
+    public async Task<ScreeningDto> UpdateScreeningAsync(int id, ScreeningUpdateDto screeningDto)
     {
         var screening = await _context.Screenings.FindAsync(id);
         if (screening == null) return null;
 
-        if (screeningDto.ScreeningTime.HasValue)
-            screening.ScreeningTime = screeningDto.ScreeningTime.Value;
+        if (screeningDto.DateTime != default(DateTime))
+            screening.DateTime = screeningDto.DateTime;
 
-        if (screeningDto.TotalSeats.HasValue)
-            screening.TotalSeats = screeningDto.TotalSeats.Value;
+        if (!string.IsNullOrEmpty(screeningDto.Location))
+            screening.Location = screeningDto.Location;
+
+        if (screeningDto.AvaliableSeats > 0)
+            screening.AvaliableSeats = screeningDto.AvaliableSeats;
 
         await _context.SaveChangesAsync();
         return await GetScreeningByIdAsync(screening.Id);

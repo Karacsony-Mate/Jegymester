@@ -1,20 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Jegymester.DataContext.Entities
+﻿namespace Jegymester.DataContext.Entities
 {
     public class Ticket
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        
-        public Screening Screening { get; set; }
         public int ScreeningId { get; set; }
-        public User User { get; set; }
-        public int UserId { get; set; }
+        public Screening Screening { get; set; }
+        public int? UserId { get; set; }
+        public User? User { get; set; }
         public int Price { get; set; }
         public DateTime PurchaseDate { get; set; }
-        public bool IsCancelled { get; set; }
+        public bool IsConfirmed { get; set; } = false;
     }
 }
