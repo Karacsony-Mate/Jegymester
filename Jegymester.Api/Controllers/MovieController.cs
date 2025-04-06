@@ -1,24 +1,108 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Jegymester.Services;
+using Microsoft.AspNetCore.Mvc;
+using Jegymester.DataContext.Dtos;
 
-namespace Jegymester.Controllers
+[Route("api/movies")]
+[ApiController]
+public class MoviesController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]/[action]")]
-    public class MovieController : ControllerBase
+    private readonly IMovieService _movieService;
+    public MoviesController(IMovieService movieService)
     {
-        private readonly IMovieService _movieService;
+        _movieService = movieService;
+    }
 
-        public MovieController(IMovieService movieService)
+    [HttpGet]
+    public async Task<IActionResult> GetMovies()
+    {
+        try
         {
-            _movieService = movieService;
+            var movies = await _movieService.GetAllMoviesAsync();
+            return Ok(movies);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetMovie(int id)
+    {
+        try
+        {
+            var movie = await _movieService.GetMovieByIdAsync(id);
+            if (movie == null)
+            {
+                return NotFound(new { message = "Film nem található!" });
+            }
+            return Ok(movie);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpPost]
+    // [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateMovie([FromBody] MovieCreateDto movieDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
         }
 
-        [HttpGet]
-        public IActionResult List()
+        try
         {
-            var result = _movieService.List();
-            return Ok(result);
+            var newMovie = await _movieService.CreateMovieAsync(movieDto);
+            return CreatedAtAction(nameof(GetMovie), new { id = newMovie.Id }, newMovie);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpPut("{id}")]
+    // [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateMovie(int id, [FromBody] MovieUpdateDto movieDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var updatedMovie = await _movieService.UpdateMovieAsync(id, movieDto);
+            if (updatedMovie == null)
+            {
+                return NotFound(new { message = "Film nem található" });
+            }
+            return Ok(updatedMovie);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    // [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteMovie(int id)
+    {
+        try
+        {
+            var success = await _movieService.DeleteMovieAsync(id);
+            if (!success)
+            {
+                return NotFound(new { message = "Film nem található vagy nem törölhető" });
+            }
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
         }
     }
 }

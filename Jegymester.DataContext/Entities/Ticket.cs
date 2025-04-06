@@ -3,8 +3,12 @@
     public class Ticket
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Address { get; set; }
-        public Seat Seat { get; set; }
+        public int ScreeningId { get; set; }
+        public Screening Screening { get; set; }
+        public int? UserId { get; set; }
+        public User? User { get; set; }
+        public int Price { get; set; }
+        public DateTime PurchaseDate { get; set; }
+        public bool IsConfirmed { get; set; } = false;
     }
 }
