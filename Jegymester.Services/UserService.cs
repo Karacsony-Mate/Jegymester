@@ -40,7 +40,7 @@ namespace Jegymester.Services
         public async Task<UserDto> RegisterAsync(UserRegisterDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
-            //user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password).ToString();
             user.Roles = new List<Role>();
 
             if (userDto.RoleIds != null)
@@ -91,7 +91,7 @@ namespace Jegymester.Services
         }
         private async Task<string> GenerateToken(User user)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("brandoburgernyamnyam"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("brandoburgernyamnyambrandoburgernyamnyam"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.Now.AddDays(Convert.ToDouble(5));
 
