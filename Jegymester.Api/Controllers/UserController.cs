@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Jegymester.DataContext.Dtos;
 using Jegymester.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Jegymester.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -16,6 +19,7 @@ namespace Jegymester.Api.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto userDto)
         {
             if (!ModelState.IsValid)
@@ -35,6 +39,7 @@ namespace Jegymester.Api.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
         {
             if (!ModelState.IsValid)
@@ -58,8 +63,9 @@ namespace Jegymester.Api.Controllers
         }
 
         //[Authorize]
-        [HttpPut("update-profile/{userId}")]
-        public async Task<IActionResult> UpdateProfile(int userId, [FromBody] UserUpdateDto userDto)
+        [HttpPut("update-profile")]
+        [Authorize(Roles = "Admin,User,Cashier")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UserUpdateDto userDto)
         {
             if (!ModelState.IsValid)
             {
@@ -68,7 +74,7 @@ namespace Jegymester.Api.Controllers
 
             try
             {
-                //var userId = int.Parse(User.Claims.First(x => x.Type == "id").Value);
+                var userId = int.Parse(User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
                 var result = await _userService.UpdateProfileAsync(userId, userDto);
                 return Ok(result);
             }
@@ -83,6 +89,7 @@ namespace Jegymester.Api.Controllers
         }
 
         [HttpGet("roles")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetRoles()
         {
             try

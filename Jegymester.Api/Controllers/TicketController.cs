@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Jegymester.Services;
 using Jegymester.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Jegymester.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TicketController : ControllerBase
     {
         private readonly ITicketService _ticketService;
@@ -16,6 +18,8 @@ namespace Jegymester.Controllers
         }
 
         [HttpGet]
+        
+
         public async Task<ActionResult<IEnumerable<TicketDto>>> GetTickets()
         {
             var tickets = await _ticketService.GetAllTicketsAsync();
@@ -34,6 +38,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Admin,Cashier")]
         public async Task<ActionResult<IEnumerable<TicketDto>>> GetTicketsByUserId(int userId)
         {
             var tickets = await _ticketService.GetTicketsByUserIdAsync(userId);
@@ -48,6 +53,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpPost("purchase")]
+        [AllowAnonymous]
         public async Task<ActionResult<TicketDto>> PurchaseTicket([FromBody] TicketPurchaseDto ticketPurchaseDto)
         {
             if (!ModelState.IsValid)
@@ -71,6 +77,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpPost("confirm/{id}")]
+        [Authorize(Roles = "Admin,Cashier")]
         public async Task<IActionResult> ConfirmTicket(int id)
         {
             var confirmed = await _ticketService.ConfirmTicketAsync(id);
@@ -82,6 +89,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpPost("purchase-offline")]
+        [Authorize(Roles = "Cashier")]
         public async Task<ActionResult<TicketDto>> PurchaseOfflineTicket([FromBody] TicketPurchaseOfflineDto ticketPurchaseOfflineDto)
         {
             if (!ModelState.IsValid)
@@ -105,6 +113,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpPut("{id}")]
+        
         public async Task<IActionResult> UpdateTicket(int id, [FromBody] TicketDto ticketDto)
         {
             var updated = await _ticketService.UpdateTicketAsync(id, ticketDto);

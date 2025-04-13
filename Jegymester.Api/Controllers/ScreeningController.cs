@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Jegymester.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/screenings")]
 [ApiController]
+[Authorize(Roles = "Admin")]
 public class ScreeningsController : ControllerBase
 {
     private readonly IScreeningService _screeningService;
@@ -13,6 +15,7 @@ public class ScreeningsController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetScreenings()
     {
         try
@@ -27,6 +30,7 @@ public class ScreeningsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetScreening(int id)
     {
         try

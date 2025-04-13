@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Jegymester.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/movies")]
 [ApiController]
+[Authorize(Roles = "Admin")]
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
