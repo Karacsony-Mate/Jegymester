@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Jegymester.Services;
 using Jegymester.DataContext.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Jegymester.Controllers
 {
@@ -53,7 +54,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpPost("purchase")]
-        [AllowAnonymous]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<TicketDto>> PurchaseTicket([FromBody] TicketPurchaseDto ticketPurchaseDto)
         {
             if (!ModelState.IsValid)
@@ -63,6 +64,7 @@ namespace Jegymester.Controllers
 
             try
             {
+                var userId = int.Parse(User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
                 var createdTicket = await _ticketService.PurchaseTicketAsync(ticketPurchaseDto);
                 return CreatedAtAction(nameof(GetTicket), new { id = createdTicket.Id }, createdTicket);
             }
@@ -89,7 +91,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpPost("purchase-offline")]
-        [Authorize(Roles = "Cashier")]
+        [AllowAnonymous]
         public async Task<ActionResult<TicketDto>> PurchaseOfflineTicket([FromBody] TicketPurchaseOfflineDto ticketPurchaseOfflineDto)
         {
             if (!ModelState.IsValid)

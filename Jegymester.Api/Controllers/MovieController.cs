@@ -46,7 +46,7 @@ public class MoviesController : ControllerBase
     }
 
     [HttpPost]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateMovie([FromBody] MovieCreateDto movieDto)
     {
         if (!ModelState.IsValid)
@@ -66,7 +66,7 @@ public class MoviesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateMovie(int id, [FromBody] MovieUpdateDto movieDto)
     {
         if (!ModelState.IsValid)
@@ -90,7 +90,7 @@ public class MoviesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteMovie(int id)
     {
         try

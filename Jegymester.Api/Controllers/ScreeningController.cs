@@ -49,7 +49,7 @@ public class ScreeningsController : ControllerBase
     }
 
     [HttpPost]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateScreening([FromBody] ScreeningCreateDto screeningDto)
     {
         if (!ModelState.IsValid)
@@ -73,7 +73,7 @@ public class ScreeningsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateScreening(int id, [FromBody] ScreeningUpdateDto screeningDto)
     {
         if (!ModelState.IsValid)
@@ -97,7 +97,7 @@ public class ScreeningsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteScreening(int id)
     {
         try
