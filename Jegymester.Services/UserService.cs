@@ -80,7 +80,9 @@ namespace Jegymester.Services
 
         public async Task<string> LoginAsync(UserLoginDto userDto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == userDto.Email);
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(x => x.Email == userDto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(userDto.Password, user.Password))
             {
                 throw new UnauthorizedAccessException("Invalid credentials.");
@@ -89,6 +91,7 @@ namespace Jegymester.Services
             //return _jwtService.GenerateToken(user);
             return await GenerateToken(user);
         }
+        
         private async Task<string> GenerateToken(User user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("brandoburgernyamnyambrandoburgernyamnyam"));
@@ -96,7 +99,7 @@ namespace Jegymester.Services
             var expires = DateTime.Now.AddDays(Convert.ToDouble(5));
 
             var id = await GetClaimsIdentity(user);
-            var token = new JwtSecurityToken("https://localhost:5023/", "https://localhost:5023/", id.Claims, expires: expires, signingCredentials: creds);
+            var token = new JwtSecurityToken("http://localhost:5023/", "http://localhost:5023/", id.Claims, expires: expires, signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -105,14 +108,11 @@ namespace Jegymester.Services
         {
             var claims = new List<Claim>
             {
-    
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Sid, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToString(CultureInfo.InvariantCulture))
-                
-             
+                new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToString(CultureInfo.InvariantCulture)),
             };
 
             if (user.Roles != null && user.Roles.Any())
@@ -123,8 +123,7 @@ namespace Jegymester.Services
 
             return new ClaimsIdentity(claims, "Token");
         }
-
-
+        
         public async Task<UserDto> UpdateProfileAsync(int userId, UserUpdateDto userDto)
         {
             var user = await _context.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == userId);
