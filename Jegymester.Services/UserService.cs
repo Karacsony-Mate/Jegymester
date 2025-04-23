@@ -57,7 +57,7 @@ namespace Jegymester.Services
 
             if (!user.Roles.Any())
             {
-                user.Roles.Add(await GetDefaultCustomerRoleAsync());
+                user.Roles.Add(await GetDefaultUserRoleAsync());
             }
 
             await _context.Users.AddAsync(user);
@@ -66,16 +66,16 @@ namespace Jegymester.Services
             return _mapper.Map<UserDto>(user);
         }
 
-        private async Task<Role> GetDefaultCustomerRoleAsync()
+        private async Task<Role> GetDefaultUserRoleAsync()
         {
-            var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Customer");
-            if (customerRole == null)
+            var userRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+            if (userRole == null)
             {
-                customerRole = new Role { Name = "Customer" };
-                await _context.Roles.AddAsync(customerRole);
+                userRole = new Role { Name = "User" };
+                await _context.Roles.AddAsync(userRole);
                 await _context.SaveChangesAsync();
             }
-            return customerRole;
+            return userRole;
         }
 
         public async Task<string> LoginAsync(UserLoginDto userDto)

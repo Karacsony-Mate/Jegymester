@@ -17,7 +17,7 @@ public class TicketPurchaseDto
     [Required]
     public int ScreeningId { get; set; }
 
-    public int? UserId { get; set; }
+    //public int? UserId { get; set; }
 
     [Required]
     public int Price { get; set; }

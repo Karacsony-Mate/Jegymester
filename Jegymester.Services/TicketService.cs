@@ -14,7 +14,7 @@ namespace Jegymester.Services
         Task<TicketDto> CreateTicketAsync(TicketDto ticketDto);
         Task<bool> UpdateTicketAsync(int id, TicketDto ticketDto);
         Task<bool> DeleteTicketAsync(int id);
-        Task<TicketDto> PurchaseTicketAsync(TicketPurchaseDto ticketPurchaseDto);
+        Task<TicketDto> PurchaseTicketAsync(TicketPurchaseDto ticketPurchaseDto, int userId);
         Task<bool> ConfirmTicketAsync(int id);
         Task<TicketDto> PurchaseOfflineTicketAsync(TicketPurchaseOfflineDto ticketPurchaseOfflineDto);
     }
@@ -67,7 +67,7 @@ namespace Jegymester.Services
             return _mapper.Map<TicketDto>(ticket);
         }
 
-        public async Task<TicketDto> PurchaseTicketAsync(TicketPurchaseDto ticketPurchaseDto)
+        public async Task<TicketDto> PurchaseTicketAsync(TicketPurchaseDto ticketPurchaseDto, int userId)
         {
             var screening = await _context.Screenings.FindAsync(ticketPurchaseDto.ScreeningId);
             if (screening == null || screening.AvaliableSeats <= 0)
@@ -78,7 +78,7 @@ namespace Jegymester.Services
             var ticket = new Ticket
             {
                 ScreeningId = ticketPurchaseDto.ScreeningId,
-                UserId = ticketPurchaseDto.UserId,
+                UserId = userId,
                 Price = ticketPurchaseDto.Price,
                 PurchaseDate = DateTime.Now
             };

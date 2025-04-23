@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Jegymester.Services;
 using Jegymester.DataContext.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Jegymester.DataContext.Entities;
 
 namespace Jegymester.Controllers
 {
@@ -18,11 +20,24 @@ namespace Jegymester.Controllers
         }
 
         [HttpGet]
-        
-
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<TicketDto>>> GetTickets()
         {
             var tickets = await _ticketService.GetAllTicketsAsync();
+            return Ok(tickets);
+        }
+
+        [HttpGet("for-user")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<TicketDto>>> GetOwnTickets()
+        {
+            var userIdClaim = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized("User ID claim not found or invalid.");
+            }
+
+            var tickets = await _ticketService.GetTicketsByUserIdAsync(userId);
             return Ok(tickets);
         }
 
@@ -63,7 +78,8 @@ namespace Jegymester.Controllers
 
             try
             {
-                var createdTicket = await _ticketService.PurchaseTicketAsync(ticketPurchaseDto);
+                var userId = int.Parse(User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                var createdTicket = await _ticketService.PurchaseTicketAsync(ticketPurchaseDto, userId);
                 return CreatedAtAction(nameof(GetTicket), new { id = createdTicket.Id }, createdTicket);
             }
             catch (KeyNotFoundException ex)
@@ -125,6 +141,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> DeleteTicket(int id)
         {
             try
