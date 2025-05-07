@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Jegymester.DataContext.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+
 
 [Route("api/screenings")]
 [ApiController]
 [Authorize(Roles = "Admin")]
+[EnableCors]
 public class ScreeningsController : ControllerBase
 {
     private readonly IScreeningService _screeningService;

@@ -8,6 +8,14 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        policy => policy.WithOrigins("http://localhost:5173")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
 //Adatbazis konnekt
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -61,7 +69,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = "http://localhost:5023/",
             ValidAudience = "http://localhost:5023/",
-            IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes("brandoburgernyamnyambrandoburgernyamnyam"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("brandoburgernyamnyambrandoburgernyamnyam"))
         };
     });
 
@@ -72,6 +80,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
+
+app.UseCors("AllowLocalhost");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
