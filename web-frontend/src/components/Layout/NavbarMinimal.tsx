@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {rem, Button, useMantineTheme} from "@mantine/core";
 import {
     IconUserCircle,
@@ -10,6 +10,7 @@ import classes from "./NavbarMinimalColored.module.css";
 import {useNavigate} from "react-router-dom";
 import {useMediaQuery} from "@mantine/hooks";
 import useAuth from "../../hooks/useAuth.tsx";
+import { AuthContext } from "../../context/AuthContext.tsx";
 
 interface NavbarLinkProps {
     icon: typeof IconHome;
@@ -43,17 +44,20 @@ export function NavbarMinimal({toggle}: any) {
     const [active, setActive] = useState(0);
     const navigate = useNavigate();
     const {logout} = useAuth();  
+    const {role} = useContext(AuthContext);
 
     const menuItems = [
         {
             icon: IconHome,
             label: "Kezdőlap",
             url: "dashboard",
+            roles: ['admin', 'user', 'cashier'] // valtoztatni kell majd kell meg a nemberegisztalt
         },
         {
             icon: IconMovie,
             label: "Vetítések",
-            url: "screenings"
+            url: "screenings",
+            roles: ['user', 'cashier']// kell meg a nem beregisztalt felhaszn
         }
 
     ];
@@ -68,6 +72,7 @@ export function NavbarMinimal({toggle}: any) {
     }, [])
 
     const links = menuItems
+        .filter((link) => link.roles.includes(role!))
         .map((link, index) => (
             <NavbarLink
                 color="app-color"
@@ -85,6 +90,7 @@ export function NavbarMinimal({toggle}: any) {
     return (
         <nav className={classes.navbar}>
             <div>
+                {role}
                 <div className={classes.navbarMain}>
                     {links}
                 </div>
