@@ -3,6 +3,7 @@ import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/api";
+import formatDateTime from "../interfaces/DateTime";
 
 
 interface IScreeningForm {
@@ -17,7 +18,7 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
 
   const form = useForm({
     initialValues: {
-      movieId: 0,
+      movieId: '',
       movieName: '',
       dateTime: '',
       location: '',
@@ -25,7 +26,7 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
     },
 
     validate: {
-      movieId: (value) => (value >= 0 ? null : 'Nem létező Id.'),
+      movieId: (value) => (value.length > 0 ? null : 'Nem létező Id.'),
       location: (value) => (value.length >= 3 ? null : 'Nem létező hely'),
       
     },
@@ -45,25 +46,44 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
       
       <p>{JSON.stringify(movies)}</p>
       <Card>
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+       
+
+        
+          <form onSubmit={form.onSubmit((values) => {
+
+            if (isCreate) {
+                api.Screenings.createScreanings({
+                movieId: parseInt(values.movieId),
+                dateTime: new Date(values.dateTime),
+                location: values.location,
+                availableSeats: values.availableSeats
+              }).then();
+            }
+            else {
+              
+            }
+            
+            
+          api.Screenings.createScreanings({
+          movieId: parseInt(values.movieId),
+          dateTime: new Date(values.dateTime),
+          location: values.location,
+          availableSeats: values.availableSeats
+        }).then();
+      })}>
           
           <Select
             withAsterisk
             label="movieName"
             placeholder="movieName"
-            data={['React', 'Angular', 'Vue', 'Svelte']}
+            data={movies.map(c =>( 
+              {label: c.title,
+                 value: c.id.toString()
+                }
+            ))}
             key={form.key('movieName')}
             {...form.getInputProps('movieName')}
-            />
-          <NumberInput
-            withAsterisk
-            label="Movie ID"            
-            placeholder="Szám"
-            
-            min={0}
-            key={form.key('movieId')}
-            {...form.getInputProps('movieId')}
-           />
+            />          
           <TextInput
             withAsterisk
             label="Location"
