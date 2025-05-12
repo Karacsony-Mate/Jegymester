@@ -9,10 +9,15 @@ const Screenings = {
 }
 
 const Movies = {
-    
-    getMovies: () => axiosInstance.get<{ id: number,title: string, description: string, duration: number,genre:string}[]>(`/movies`)
-
-}
+    getMovies: () => axiosInstance.get<{ id: number; title: string; description: string; duration: number; genre: string }[]>(
+        `movies`,
+        {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`, // Replace with your token retrieval logic
+            },
+        }
+    ),
+};
 
 const Auth = {
     login: (email: string, password: string) => axiosInstance.post<{token: string}>("/User/login", {email, password})

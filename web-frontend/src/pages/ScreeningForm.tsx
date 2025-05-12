@@ -12,7 +12,7 @@ interface IScreeningForm {
 const ScreeningForm = ({ isCreate }: IScreeningForm) => {
   const { id } = useParams();
   //const [movies,getMovies]=useState<{id: number,title: string, description: string, duration: number,genre:string}[]>([]);
-  const [movies, setMovies] = useState<{ id: number; title: string; description: string; duration: number; genre: string }[]>([]);
+  const [movies, getMovies] = useState<{ id: number; title: string; description: string; duration: number; genre: string }[]>([]);
 
 
   const form = useForm({
@@ -40,14 +40,15 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
 
   return (
     <div>
-      Hello screenings
-      <p>{id}</p>
-      <p>{JSON.stringify(isCreate)}</p>
+      
+      
+      
       <p>{JSON.stringify(movies)}</p>
       <Card>
         <form onSubmit={form.onSubmit((values) => console.log(values))}>
           
           <Select
+            withAsterisk
             label="movieName"
             placeholder="movieName"
             data={['React', 'Angular', 'Vue', 'Svelte']}
@@ -55,6 +56,7 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
             {...form.getInputProps('movieName')}
             />
           <NumberInput
+            withAsterisk
             label="Movie ID"            
             placeholder="Szám"
             
