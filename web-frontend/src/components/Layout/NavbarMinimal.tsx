@@ -57,7 +57,7 @@ export function NavbarMinimal({toggle}: any) {
             icon: IconMovie,
             label: "Vetítések",
             url: "screenings",
-            roles: ['user', 'cashier']// kell meg a nem beregisztalt felhaszn
+            roles: ['user', 'cashier','admin']// kell meg a nem beregisztalt felhaszn
         }
 
     ];
