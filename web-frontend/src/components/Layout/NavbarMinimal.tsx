@@ -4,7 +4,8 @@ import {
     IconUserCircle,
     IconLogout,
     IconHome,
-    IconMovie
+    IconMovie,
+    IconActivity
 } from "@tabler/icons-react";
 import classes from "./NavbarMinimalColored.module.css";
 import {useNavigate} from "react-router-dom";
@@ -54,10 +55,22 @@ export function NavbarMinimal({toggle}: any) {
             roles: ['admin', 'user', 'cashier'] // valtoztatni kell majd kell meg a nemberegisztalt
         },
         {
-            icon: IconMovie,
+            icon: IconActivity,
             label: "Vetítések",
             url: "screenings",
             roles: ['user', 'cashier','admin']// kell meg a nem beregisztalt felhaszn
+        },
+        {
+            icon: IconMovie,
+            label: "Filmek",
+            url: "movies",
+            roles: ['admin', 'user', 'cashier']
+        },
+        {
+            icon: IconUserCircle,
+            label: "Adatok megváltoztatása",
+            url: "dataChange",
+            roles: ['admin', 'user', 'cashier']
         }
 
     ];

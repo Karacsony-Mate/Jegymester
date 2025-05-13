@@ -1,22 +1,19 @@
+import { IMovies } from "../interfaces/IMovies";
 import { IScreenings } from "../interfaces/IScreenings";
+import { ICreateScreenings } from "../interfaces/ICreateScreenings";
 import axiosInstance from "./axios.config";
 
 
 
 const Screenings = {
     getScreenings: () => axiosInstance.get<IScreenings[]>("screenings"),
-    
+    createScreening: (data: ICreateScreenings) =>axiosInstance.post("screenings", data),
+    updateScreening: (id: number, data: ICreateScreenings) => axiosInstance.put(`screenings/${id}`, data),
+    getScreeningById: (id: number) =>axiosInstance.get<IScreenings>(`screenings/${id}`),
 }
 
 const Movies = {
-    getMovies: () => axiosInstance.get<{ id: number; title: string; description: string; duration: number; genre: string }[]>(
-        `movies`,
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`, // Replace with your token retrieval logic
-            },
-        }
-    ),
+    getMovies: () => axiosInstance.get<IMovies[]>("movies")
 };
 
 const Auth = {

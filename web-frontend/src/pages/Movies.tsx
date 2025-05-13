@@ -2,26 +2,25 @@ import { Button, Card, Table} from '@mantine/core';
 import {useEffect, useState} from "react";
 //import axiosInstance from '../api/axios.config';
 import api from '../api/api.ts';
-import { IScreenings } from '../interfaces/IScreenings.ts';
-import formatDateTime from '../interfaces/DateTime.tsx';
+import { IMovies } from '../interfaces/IMovies.ts';
+//import formatDateTime from '../interfaces/DateTime.tsx';
 import { useNavigate } from 'react-router-dom';
 
-const Screenings = () => {
-  const [items, setItems] = useState<IScreenings[]>([])
+const Movies = () => {
+  const [items, setItems] = useState<IMovies[]>([])
   const navigate = useNavigate();
 
     useEffect( () => {
-        api.Screenings.getScreenings().then(res => {
+        api.Movies.getMovies().then(res => {
           setItems(res.data);
         });
     }, []);
     
     const rows = items.map((element) => (
       <Table.Tr key={element.id}>
-        <Table.Td>{element.movieTitle}</Table.Td>
-        <Table.Td>{formatDateTime(element.dateTime)}</Table.Td>
-        <Table.Td>{element.location}</Table.Td>
-        <Table.Td>{element.availableSeats}</Table.Td>
+        <Table.Td>{element.title}</Table.Td>
+        <Table.Td>{element.duration} minute</Table.Td>
+        <Table.Td>{element.genre}</Table.Td>
         <Table.Td>
           <Button onClick={() => navigate(`${element.id}`)} color='dark'>Módosítás</Button>
         </Table.Td>
@@ -29,15 +28,14 @@ const Screenings = () => {
     ));
   
   return <div>
-    <button onClick={() => navigate('create')}>Új vetítés hozzáadása</button>
+    <button onClick={() => navigate('create')}>Új film hozzáadása</button>
     <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Table>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Movie Title</Table.Th>
-              <Table.Th>Screening date</Table.Th>
-              <Table.Th>Room</Table.Th>
-              <Table.Th>Seats Left</Table.Th>
+              <Table.Th>Cím</Table.Th>
+              <Table.Th>Hossz</Table.Th>
+              <Table.Th>Téma</Table.Th>
               <Table.Th>Műveletek</Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -47,4 +45,4 @@ const Screenings = () => {
     </div>
 }
 
-export default Screenings;
+export default Movies;
