@@ -12,13 +12,15 @@ const Screenings = {
     createScreening: (data: ICreateScreenings) =>axiosInstance.post("screenings", data),
     updateScreening: (id: number, data: ICreateScreenings) => axiosInstance.put(`screenings/${id}`, data),
     getScreeningById: (id: number) =>axiosInstance.get<IScreenings>(`screenings/${id}`),
+    deleteScreeningById: (id: number) => axiosInstance.delete(`screenings/${id}`),
 }
 
 const Movies = {
     getMovies: () => axiosInstance.get<IMovies[]>("movies"),
     createMovie: (data: ICreateMovies) =>axiosInstance.post("movies", data),
     updateMovie: (id: number, data: ICreateMovies) => axiosInstance.put(`movies/${id}`, data),
-    getMovieById: (id: number) =>axiosInstance.get<IMovies>(`screenings/${id}`),
+    getMovieById: (id: number) =>axiosInstance.get<IMovies>(`movies/${id}`),
+    deleteMovieById: (id: number) => axiosInstance.delete(`movies/${id}`),
 };
 
 const User = {

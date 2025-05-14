@@ -1,48 +1,99 @@
-import { Button, Card, Table} from '@mantine/core';
-import {useEffect, useState} from "react";
-//import axiosInstance from '../api/axios.config';
-import api from '../api/api.ts';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, message, Popconfirm, Spin } from 'antd';
 import { IMovies } from '../interfaces/IMovies.ts';
-//import formatDateTime from '../interfaces/DateTime.tsx';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/api.ts';
 
-const Movies = () => {
-  const [items, setItems] = useState<IMovies[]>([])
+const Movies: React.FC = () => {
+  const [items, setItems] = useState<IMovies[]>([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-    useEffect( () => {
-        api.Movies.getMovies().then(res => {
-          setItems(res.data);
-        });
-    }, []);
-    
-    const rows = items.map((element) => (
-      <Table.Tr key={element.id}>
-        <Table.Td>{element.title}</Table.Td>
-        <Table.Td>{element.duration} minute</Table.Td>
-        <Table.Td>{element.genre}</Table.Td>
-        <Table.Td>
-          <Button onClick={() => navigate(`${element.id}`)} color='dark'>Módosítás</Button>
-        </Table.Td>
-      </Table.Tr>
-    ));
-  
-  return <div>
-    <button onClick={() => navigate('create')}>Új film hozzáadása</button>
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Cím</Table.Th>
-              <Table.Th>Hossz</Table.Th>
-              <Table.Th>Téma</Table.Th>
-              <Table.Th>Műveletek</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-    </Card>
+  const fetchMovies = async () => {
+    setLoading(true);
+    try {
+      const res = await api.Movies.getMovies();
+      setItems(res.data);
+    } catch (error) {
+      message.error('Nem sikerült betölteni a filmeket.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovies();
+  }, []);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await api.Movies.deleteMovieById(id);
+      message.success('Film törölve.');
+      setItems(prev => prev.filter(movie => movie.id !== id));
+    } catch (error: any) {
+      const backendMsg = error?.response?.data?.message;
+      if (backendMsg) {
+        message.error(backendMsg);
+      } else {
+        message.error('Nem sikerült törölni a filmet.');
+      }
+    }
+  };
+
+  const columns = [
+    {
+      title: 'Cím',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Hossz',
+      dataIndex: 'duration',
+      key: 'duration',
+      render: (val: number) => `${val} perc`,
+    },
+    {
+      title: 'Téma',
+      dataIndex: 'genre',
+      key: 'genre',
+    },
+    {
+      title: 'Műveletek',
+      key: 'actions',
+      render: (_: any, record: IMovies) => (
+        <>
+          <Button type="primary" onClick={() => navigate(`${record.id}`)} style={{ marginRight: 8 }}>
+            Módosítás
+          </Button>
+          <Popconfirm
+            title="Biztosan törlöd?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Igen"
+            cancelText="Mégse"
+          >
+            <Button danger>Törlés</Button>
+          </Popconfirm>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <Button type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
+        Új film hozzáadása
+      </Button>
+
+      <Spin spinning={loading}>
+        <Table
+          dataSource={items}
+          columns={columns}
+          rowKey="id"
+          pagination={false}
+        />
+      </Spin>
     </div>
-}
+  );
+};
 
 export default Movies;
