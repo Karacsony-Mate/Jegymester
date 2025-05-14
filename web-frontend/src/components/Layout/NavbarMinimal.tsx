@@ -69,7 +69,7 @@ export function NavbarMinimal({toggle}: any) {
         {
             icon: IconUserCircle,
             label: "Adatok megváltoztatása",
-            url: "dataChange",
+            url: "userform",
             roles: ['admin', 'user', 'cashier']
         }
 

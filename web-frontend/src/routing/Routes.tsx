@@ -4,7 +4,9 @@ import Dashboard from "../pages/Dashboard.tsx";
 import Screenings from "../pages/Screenings.tsx"
 import ScreeningForm from "../pages/ScreeningForm.tsx";
 import Movies from "../pages/Movies.tsx"
-import DataChange from "../pages/DataChange.tsx"
+import MovieForm from "../pages/MovieForm.tsx";
+import UserForm from "../pages/UserForm.tsx";
+
 export const routes = [
     {
         path: "login",
@@ -42,8 +44,18 @@ export const routes = [
         isPrivate: true
     },
     {
-        path: "dataChange",
-        component: <DataChange/>,
+        path: "movies/create",
+        component: <MovieForm isCreate={true}/>,
+        isPrivate: true
+    },
+    {
+        path: "movies/:id",
+        component: <MovieForm isCreate={false}/>,
+        isPrivate: true
+    },
+    {
+        path: "userform",
+        component: <UserForm/>,
         isPrivate: true
     }
 ]
