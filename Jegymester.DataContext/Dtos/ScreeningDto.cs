@@ -24,7 +24,7 @@ public class ScreeningCreateDto
     public string Location { get; set; }
 
     [Required]
-    public int AvaliableSeats { get; set; }
+    public int AvailableSeats { get; set; }
 }
 
 public class ScreeningUpdateDto
@@ -33,5 +33,5 @@ public class ScreeningUpdateDto
 
     public string Location { get; set; }
 
-    public int AvaliableSeats { get; set; }
+    public int AvailableSeats { get; set; }
 }

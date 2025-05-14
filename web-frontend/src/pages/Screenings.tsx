@@ -3,9 +3,11 @@ import { IScreenings } from '../interfaces/IScreenings';
 import { useNavigate } from 'react-router-dom';
 import { purchaseTicket } from '../api/tickets';
 import { ITicketPurchase } from '../interfaces/ITicket';
-import { message, Modal, InputNumber } from 'antd';
+import { message, Modal, InputNumber, Popconfirm, Button, Table } from 'antd';
+import formatDateTime from '../interfaces/DateTime';
 import { getUserIdFromToken } from '../api/jwtUtils';
 import useAuth from '../hooks/useAuth';
+import api from '../api/api';
 
 const Screenings = () => {
   const [items, setItems] = useState<IScreenings[]>([]);
@@ -78,19 +80,19 @@ const Screenings = () => {
       key: 'actions',
       render: (_: any, record: IScreenings) => (
         <>
-          <AntButton onClick={() => navigate(`${record.id}`)} type="primary" style={{ marginRight: 8 }}>
+          <Button onClick={() => navigate(`${record.id}`)} type="primary" style={{ marginRight: 8 }}>
             Módosítás
-          </AntButton>
-          <AntButton onClick={() => setBuyModal({ open: true, screeningId: record.id })} type="default" style={{ marginRight: 8 }}>
+          </Button>
+          <Button onClick={() => setBuyModal({ open: true, screeningId: record.id })} type="default" style={{ marginRight: 8 }}>
             Jegyvásárlás
-          </AntButton>
+          </Button>
           <Popconfirm
             title="Biztosan törlöd ezt a vetítést?"
             onConfirm={() => handleDelete(record.id)}
             okText="Igen"
             cancelText="Mégse"
           >
-            <AntButton danger>Törlés</AntButton>
+            <Button danger>Törlés</Button>
           </Popconfirm>
         </>
       ),
@@ -99,10 +101,10 @@ const Screenings = () => {
 
   return (
     <div>
-      <AntButton type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
+      <Button type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
         Új vetítés hozzáadása
-      </AntButton>
-      <AntTable dataSource={items} columns={columns} rowKey="id" pagination={false} />
+      </Button>
+      <Table dataSource={items} columns={columns} rowKey="id" pagination={false} />
       <Modal
         title="Jegyvásárlás"
         open={buyModal.open}

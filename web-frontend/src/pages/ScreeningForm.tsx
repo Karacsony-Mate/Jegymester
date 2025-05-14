@@ -39,11 +39,15 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
   }, [isCreate, id, form]);
 
   const handleSubmit = async (values: any) => {
+    // Az InputNumber komponensből a values.availableSeats már szám, de fallback: parseInt
+    const availableSeats = typeof values.availableSeats === 'number'
+      ? values.availableSeats
+      : parseInt(values.availableSeats, 10);
     const payload: ICreateScreenings = {
       movieId: parseInt(values.movieId),
       dateTime: new Date(values.dateTime),
       location: values.location,
-      availableSeats: values.availableSeats,
+      availableSeats: isNaN(availableSeats) ? 0 : availableSeats,
     };
 
     try {
@@ -54,7 +58,7 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
         await api.Screenings.updateScreening(Number(id), payload);
         message.success("Vetítés sikeresen frissítve!");
       }
-      navigate('/screenings'); // Redirect after save/update
+      navigate('/app/screenings'); // Redirect after save/update
     } catch (error) {
       message.error("Hiba történt a vetítés adatainak mentése közben.");
     }

@@ -70,7 +70,7 @@ public class ScreeningService : IScreeningService
             MovieId = screeningDto.MovieId,
             DateTime = screeningDto.DateTime,
             Location = screeningDto.Location,
-            AvaliableSeats = screeningDto.AvaliableSeats
+            AvaliableSeats = screeningDto.AvailableSeats
         };
 
         _context.Screenings.Add(screening);
@@ -90,8 +90,8 @@ public class ScreeningService : IScreeningService
         if (!string.IsNullOrEmpty(screeningDto.Location))
             screening.Location = screeningDto.Location;
 
-        if (screeningDto.AvaliableSeats > 0)
-            screening.AvaliableSeats = screeningDto.AvaliableSeats;
+        if (screeningDto.AvailableSeats > 0)
+            screening.AvaliableSeats = screeningDto.AvailableSeats;
 
         await _context.SaveChangesAsync();
         return await GetScreeningByIdAsync(screening.Id);
