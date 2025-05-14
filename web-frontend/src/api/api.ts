@@ -38,6 +38,6 @@ const Tickets = {
     purchaseOfflineTicket: ticketApi.purchaseOfflineTicket,
 };
 
-const api = {Screenings, Auth, Movies, User, Tickets};
+const api = {Screenings, Movies, User, Tickets, Auth};
 
 export default api;

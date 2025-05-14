@@ -39,7 +39,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        [Authorize(Roles = "Admin,Cashier")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<TicketDto>>> GetTicketsByUserId(int userId)
         {
             var tickets = await _ticketService.GetTicketsByUserIdAsync(userId);

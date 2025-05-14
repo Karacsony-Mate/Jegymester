@@ -1,38 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { ITicket } from '../interfaces/ITicket';
-import { getTicketsByUserId, deleteTicket, confirmTicket } from '../api/tickets';
-import { getUserIdFromToken } from '../api/jwtUtils';
+import { IScreenings } from '../interfaces/IScreenings';
+import { getAllTickets, deleteTicket, confirmTicket } from '../api/tickets';
+import api from '../api/api';
 import { AuthContext } from '../context/AuthContext';
 import { Button, Table, message, Popconfirm } from 'antd';
 
-const MyTickets: React.FC = () => {
+const AllTickets: React.FC = () => {
   const [tickets, setTickets] = useState<ITicket[]>([]);
+  const [screenings, setScreenings] = useState<IScreenings[]>([]);
   const [loading, setLoading] = useState(false);
-  const { token, role } = useContext(AuthContext);
+  const { role } = useContext(AuthContext);
 
   const fetchTickets = async () => {
     setLoading(true);
-    let errorShown = false;
     try {
-      let userId = null;
-      if (token) {
-        userId = getUserIdFromToken(token);
-      }
-      if (!userId) {
-        if (!errorShown) {
-          message.error('Nem sikerült azonosítani a felhasználót.');
-          errorShown = true;
-        }
-        setLoading(false);
-        return;
-      }
-      const data = await getTicketsByUserId(userId);
+      const data = await getAllTickets();
       setTickets(data);
     } catch (error) {
-      if (!errorShown) {
-        message.error('Nem sikerült betölteni a jegyeket.');
-        errorShown = true;
-      }
+      message.error('Nem sikerült betölteni a jegyeket.');
     } finally {
       setLoading(false);
     }
@@ -40,8 +26,8 @@ const MyTickets: React.FC = () => {
 
   useEffect(() => {
     fetchTickets();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+    api.Screenings.getScreenings().then(res => setScreenings(res.data));
+  }, []);
 
   const handleDelete = async (id: number) => {
     try {
@@ -75,7 +61,7 @@ const MyTickets: React.FC = () => {
 
   return (
     <div>
-      <h2>Saját jegyeim</h2>
+      <h2>Összes jegy</h2>
       <Table
         dataSource={tickets}
         rowKey="id"
@@ -83,13 +69,14 @@ const MyTickets: React.FC = () => {
         pagination={false}
         columns={[
           { title: 'Jegy ID', dataIndex: 'id' },
+          { title: 'Felhasználó ID', dataIndex: 'userId' },
           { title: 'Vetítés ID', dataIndex: 'screeningId' },
           { title: 'Ár', dataIndex: 'price' },
           { title: 'Vásárlás dátuma', dataIndex: 'purchaseDate', render: (date: string) => new Date(date).toLocaleString() },
           { title: 'Megerősítve', dataIndex: 'isConfirmed', render: (v: boolean) => v ? 'Igen' : 'Nem' },
           {
             title: 'Művelet',
-            render: (_, record) => (
+            render: (_: any, record: ITicket) => (
               <>
                 <Popconfirm title="Biztosan törlöd?" onConfirm={() => handleDelete(record.id)} okText="Igen" cancelText="Mégse">
                   <Button danger>Törlés</Button>
@@ -108,4 +95,4 @@ const MyTickets: React.FC = () => {
   );
 };
 
-export default MyTickets;
+export default AllTickets;

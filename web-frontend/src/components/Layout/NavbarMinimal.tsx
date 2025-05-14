@@ -53,31 +53,43 @@ export function NavbarMinimal({toggle}: any) {
             icon: IconHome,
             label: "Kezdőlap",
             url: "dashboard",
-            roles: ['admin', 'user', 'cashier'] // valtoztatni kell majd kell meg a nemberegisztalt
+            roles: ['Admin', 'Customer', 'Cashier'] // valtoztatni kell majd kell meg a nemberegisztalt
         },
         {
             icon: IconActivity,
             label: "Vetítések",
             url: "screenings",
-            roles: ['user', 'cashier','admin']// kell meg a nem beregisztalt felhaszn
+            roles: ['Customer', 'Cashier','Admin']// kell meg a nem beregisztalt felhaszn
         },
         {
             icon: IconMovie,
             label: "Filmek",
             url: "movies",
-            roles: ['admin', 'user', 'cashier']
+            roles: ['Admin', 'Customer', 'Cashier']
         },
         {
             icon: IconTicket,
             label: "Jegyek",
             url: "my-tickets",
-            roles: ['user', 'admin', 'cashier']
+            roles: ['Customer', 'Admin', 'Cashier']
+        },
+        {
+            icon: IconTicket,
+            label: "Összes jegy",
+            url: "all-tickets",
+            roles: ['Admin', 'Cashier']
+        },
+        {
+            icon: IconTicket,
+            label: "Offline jegyvásárlás",
+            url: "offline-ticket-purchase",
+            roles: ['Admin', 'Cashier']
         },
         {
             icon: IconUserCircle,
             label: "Adatok megváltoztatása",
             url: "userform",
-            roles: ['admin', 'user', 'cashier']
+            roles: ['Admin', 'Customer', 'Cashier']
         }
 
     ];

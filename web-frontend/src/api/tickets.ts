@@ -24,3 +24,17 @@ export const purchaseOfflineTicket = async (data: ITicketPurchaseOffline): Promi
   const response = await axios.post<ITicket>('/ticket/purchase-offline', data);
   return response.data;
 };
+
+export const getTicketsByUserId = async (userId: number): Promise<ITicket[]> => {
+  const response = await axios.get<ITicket[]>(`/ticket/user/${userId}`);
+  return response.data;
+};
+
+export const confirmTicket = async (id: number): Promise<void> => {
+  await axios.post(`/ticket/confirm/${id}`);
+};
+
+export const getAllTickets = async (): Promise<ITicket[]> => {
+  const response = await axios.get<ITicket[]>('/ticket');
+  return response.data;
+};

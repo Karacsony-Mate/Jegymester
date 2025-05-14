@@ -7,6 +7,8 @@ import Movies from "../pages/Movies.tsx"
 import MovieForm from "../pages/MovieForm.tsx";
 import UserForm from "../pages/UserForm.tsx";
 import MyTickets from "../pages/MyTickets";
+import AllTickets from "../pages/AllTickets";
+import OfflineTicketPurchase from "../pages/OfflineTicketPurchase";
 
 export const routes = [
     {
@@ -62,6 +64,16 @@ export const routes = [
     {
         path: "my-tickets",
         component: <MyTickets/>,
+        isPrivate: true
+    },
+    {
+        path: "all-tickets",
+        component: <AllTickets/>,
+        isPrivate: true
+    },
+    {
+        path: "offline-ticket-purchase",
+        component: <OfflineTicketPurchase/>,
         isPrivate: true
     }
 ]

@@ -7,12 +7,15 @@ import { useNavigate } from 'react-router-dom';
 import { purchaseTicket } from '../api/tickets';
 import { ITicketPurchase } from '../interfaces/ITicket';
 import { message, Modal, InputNumber } from 'antd';
+import { getUserIdFromToken } from '../api/jwtUtils';
+import useAuth from '../hooks/useAuth';
 
 const Screenings = () => {
   const [items, setItems] = useState<IScreenings[]>([]);
   const navigate = useNavigate();
   const [buyModal, setBuyModal] = useState<{ open: boolean, screeningId: number | null }>({ open: false, screeningId: null });
   const [price, setPrice] = useState<number>(2000); // alapértelmezett jegyár
+  const { token } = useAuth();
 
   useEffect(() => {
     api.Screenings.getScreenings().then(res => {
@@ -23,9 +26,14 @@ const Screenings = () => {
   const handleBuyTicket = async () => {
     if (!buyModal.screeningId) return;
     try {
+      let userId = null;
+      if (token) {
+        userId = getUserIdFromToken(token);
+      }
       const ticket: ITicketPurchase = {
         screeningId: buyModal.screeningId,
-        price: price
+        price: price,
+        userId: userId ?? undefined
       };
       await purchaseTicket(ticket);
       message.success('Jegy sikeresen megvásárolva!');

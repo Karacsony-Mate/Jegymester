@@ -19,7 +19,7 @@ const useAuth = () => {
         api.Auth.login(email, password).then(res =>{
             const decodedToken : JwtPayload = jwtDecode(res.data.token);
             //console.log(decodedToken);
-            const userRole = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];//hibat ir de tokeletesen mukodik mert a program egy csoda
+            const userRole = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
             setRole(userRole);
             localStorage.setItem(roleKeyName, userRole);
             const tokenFromBE = res.data.token;

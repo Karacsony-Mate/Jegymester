@@ -30,4 +30,6 @@ public class TicketPurchaseOfflineDto
 
     [Required]
     public int Price { get; set; }
+
+    public int? UserId { get; set; }
 }

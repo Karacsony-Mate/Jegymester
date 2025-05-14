@@ -113,7 +113,8 @@ namespace Jegymester.Services
             {
                 ScreeningId = ticketPurchaseOfflineDto.ScreeningId,
                 Price = ticketPurchaseOfflineDto.Price,
-                PurchaseDate = DateTime.Now
+                PurchaseDate = DateTime.Now,
+                UserId = ticketPurchaseOfflineDto.UserId
             };
 
             screening.AvaliableSeats--;

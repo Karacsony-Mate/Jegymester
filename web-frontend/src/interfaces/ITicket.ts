@@ -16,4 +16,5 @@ export interface ITicketPurchase {
 export interface ITicketPurchaseOffline {
   screeningId: number;
   price: number;
+  userId?: number;
 }
