@@ -54,7 +54,7 @@ namespace Jegymester.Controllers
         }
 
         [HttpPost("purchase")]
-        [Authorize(Roles = "User")]
+        [Authorize]
         public async Task<ActionResult<TicketDto>> PurchaseTicket([FromBody] TicketPurchaseDto ticketPurchaseDto)
         {
             if (!ModelState.IsValid)

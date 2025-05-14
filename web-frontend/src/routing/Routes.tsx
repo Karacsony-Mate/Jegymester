@@ -6,6 +6,7 @@ import ScreeningForm from "../pages/ScreeningForm.tsx";
 import Movies from "../pages/Movies.tsx"
 import MovieForm from "../pages/MovieForm.tsx";
 import UserForm from "../pages/UserForm.tsx";
+import MyTickets from "../pages/MyTickets";
 
 export const routes = [
     {
@@ -56,6 +57,11 @@ export const routes = [
     {
         path: "userform",
         component: <UserForm/>,
+        isPrivate: true
+    },
+    {
+        path: "my-tickets",
+        component: <MyTickets/>,
         isPrivate: true
     }
 ]

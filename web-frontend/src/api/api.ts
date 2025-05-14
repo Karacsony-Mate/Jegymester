@@ -3,6 +3,7 @@ import { IScreenings } from "../interfaces/IScreenings";
 import { ICreateScreenings } from "../interfaces/ICreateScreenings";
 import { ICreateMovies } from "../interfaces/ICreateMovies";
 import axiosInstance from "./axios.config";
+import * as ticketApi from "../api/tickets";
 
 
 
@@ -29,6 +30,14 @@ const Auth = {
     login: (email: string, password: string) => axiosInstance.post<{token: string}>("/User/login", {email, password})
 }
 
-const api = {Screenings, Auth, Movies, User};
+const Tickets = {
+    getMyTickets: ticketApi.getMyTickets,
+    purchaseTicket: ticketApi.purchaseTicket,
+    deleteTicket: ticketApi.deleteTicket,
+    getTicketById: ticketApi.getTicketById,
+    purchaseOfflineTicket: ticketApi.purchaseOfflineTicket,
+};
+
+const api = {Screenings, Auth, Movies, User, Tickets};
 
 export default api;

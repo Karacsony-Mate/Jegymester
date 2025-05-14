@@ -5,7 +5,8 @@ import {
     IconLogout,
     IconHome,
     IconMovie,
-    IconActivity
+    IconActivity,
+    IconTicket
 } from "@tabler/icons-react";
 import classes from "./NavbarMinimalColored.module.css";
 import {useNavigate} from "react-router-dom";
@@ -65,6 +66,12 @@ export function NavbarMinimal({toggle}: any) {
             label: "Filmek",
             url: "movies",
             roles: ['admin', 'user', 'cashier']
+        },
+        {
+            icon: IconTicket,
+            label: "Jegyek",
+            url: "my-tickets",
+            roles: ['user', 'admin', 'cashier']
         },
         {
             icon: IconUserCircle,
