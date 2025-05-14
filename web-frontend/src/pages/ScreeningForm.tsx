@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, InputNumber, Select, Space, message } from 'antd';
+import { Button, Card, Form, Input, InputNumber, Select, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from "../api/api";
 import { ICreateScreenings } from "../interfaces/ICreateScreenings";
@@ -43,9 +43,24 @@ const ScreeningForm = ({ isCreate }: IScreeningForm) => {
     const availableSeats = typeof values.availableSeats === 'number'
       ? values.availableSeats
       : parseInt(values.availableSeats, 10);
+
+    // --- IDŐZÓNA JAVÍTÁS ---
+    // Feltételezzük, hogy a felhasználó helyi időt ír be (pl. "2025-06-10 18:30")
+    // Ezt helyi időként kell ISO stringgé alakítani, hogy a backend ne UTC-nek értelmezze
+    let dateTimeString = values.dateTime;
+    let dateTimeISO = '';
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(dateTimeString)) {
+      // Átalakítás: "2025-06-10 18:30" => "2025-06-10T18:30"
+      dateTimeISO = dateTimeString.replace(' ', 'T');
+    } else {
+      // Ha már ISO vagy más formátum, próbáljuk meg Date-ből kinyerni helyi idő szerint
+      const d = new Date(dateTimeString);
+      dateTimeISO = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+
     const payload: ICreateScreenings = {
       movieId: parseInt(values.movieId),
-      dateTime: new Date(values.dateTime),
+      dateTime: dateTimeISO, // string, helyi időzónában, nincs Z vagy offset
       location: values.location,
       availableSeats: isNaN(availableSeats) ? 0 : availableSeats,
     };

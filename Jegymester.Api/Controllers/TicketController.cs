@@ -8,7 +8,7 @@ namespace Jegymester.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     public class TicketController : ControllerBase
     {
         private readonly ITicketService _ticketService;

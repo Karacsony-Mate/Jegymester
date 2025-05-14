@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 
 [Route("api/movies")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;

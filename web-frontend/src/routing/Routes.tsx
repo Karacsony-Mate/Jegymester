@@ -9,6 +9,8 @@ import UserForm from "../pages/UserForm.tsx";
 import MyTickets from "../pages/MyTickets";
 import AllTickets from "../pages/AllTickets";
 import OfflineTicketPurchase from "../pages/OfflineTicketPurchase";
+import RegisterForm from "../pages/RegisterForm.tsx";
+import GuestTicketPurchase from "../pages/GuestTicketPurchase.tsx";
 
 export const routes = [
     {
@@ -75,5 +77,15 @@ export const routes = [
         path: "offline-ticket-purchase",
         component: <OfflineTicketPurchase/>,
         isPrivate: true
+    },
+    {
+        path: "register",
+        component: <RegisterForm/>,
+        isPrivate: false
+    },
+    {
+        path: "guest-ticket-purchase",
+        component: <GuestTicketPurchase/>,
+        isPrivate: false
     }
 ]

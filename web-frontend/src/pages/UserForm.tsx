@@ -10,9 +10,11 @@ import { useForm } from "@mantine/form";
 import { useNavigate } from "react-router-dom";
 import AuthContainer from "../components/AuthContainer.tsx";
 import api from "../api/api";
+import useAuth from "../hooks/useAuth";
 
 const UserForm = () => {
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     const form = useForm({
     initialValues: {
@@ -31,9 +33,12 @@ const UserForm = () => {
     const submit = async () => {
     try {
         const { name, email, phoneNumber } = form.values;
-        const response = await api.User.changeUserData(email, name, phoneNumber, [3]); // Assuming role ID 0
+        const response = await api.User.changeUserData(name, email, phoneNumber, [1]); // Assuming role ID 0
         console.log("User data updated successfully:", response.data);
         alert("Siker!"); // Show success message
+        // Sikeres adatváltoztatás után kijelentkeztet és login oldalra dob
+        logout();
+        navigate("/login");
     } catch (error) {
         console.error("Error updating user data:", error);
         alert("Hiba történt az adatok frissítése közben."); // Show error message
@@ -60,14 +65,6 @@ const UserForm = () => {
                             key={form.key('email')}
                             radius="md"
                             {...form.getInputProps('email')}
-                        />
-                        <PasswordInput
-                            required
-                            label="Új jelszó"
-                            placeholder="Jelszavad"
-                            key={form.key('password')}
-                            radius="md"
-                            {...form.getInputProps('password')}
                         />
                         <TextInput
                             required

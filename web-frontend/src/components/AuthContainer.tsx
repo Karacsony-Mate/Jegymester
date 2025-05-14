@@ -1,4 +1,4 @@
-import {Center, Divider, Image, Paper, Text} from "@mantine/core";
+import {Center, Divider, Paper, Text} from "@mantine/core";
 
 interface AuthContainerInterface {
     children: JSX.Element;
@@ -9,7 +9,7 @@ const AuthContainer = ({children}: AuthContainerInterface) => {
         <Center>
             <Paper radius="md" p="xl" withBorder maw={600} m={10}>
                 <Text size="lg" fw={500}>
-                    Üdvözlünk a Netpincér felületen
+                    Üdvözlünk a Jegymester felületen
                 </Text>
                 <Divider my="lg"/>
                 {children}

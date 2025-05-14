@@ -11,6 +11,8 @@ import {useForm} from "@mantine/form";
 import {useNavigate} from "react-router-dom";
 import AuthContainer from "../components/AuthContainer.tsx";
 import useAuth from "../hooks/useAuth.tsx";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import RegisterForm from "./pages/RegisterForm";
 
 
 const Login = () => {
@@ -57,10 +59,14 @@ const Login = () => {
                 </Stack>
 
                 <Group justify="space-between" mt="xl">
-                    <Anchor component="button" type="button" c="dimmed" onClick={() => navigate('/forgot')}
+                    
+                    <Anchor component="button" type="button" c="dimmed" onClick={() => navigate('/register')}
                             size="xs">
-                        Elfelejtetted a jelszavad?
+                        Regisztráció
                     </Anchor>
+                    <Button type="button" variant="outline" radius="xl" onClick={() => navigate('/guest-ticket-purchase')}>
+                        Folytatás regisztráció nélkül
+                    </Button>
                     <Button type="submit" radius="xl" id="login-button">
                         Bejelentkezés
                     </Button>

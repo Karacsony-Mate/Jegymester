@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { IScreenings } from '../interfaces/IScreenings';
 import { useNavigate } from 'react-router-dom';
 import { purchaseTicket } from '../api/tickets';
 import { ITicketPurchase } from '../interfaces/ITicket';
-import { message, Modal, InputNumber, Popconfirm, Button, Table } from 'antd';
+import { message, Modal, Popconfirm, Button, Table } from 'antd';
 import formatDateTime from '../interfaces/DateTime';
 import { getUserIdFromToken } from '../api/jwtUtils';
 import useAuth from '../hooks/useAuth';
 import api from '../api/api';
+import { AuthContext } from '../context/AuthContext';
 
 const Screenings = () => {
   const [items, setItems] = useState<IScreenings[]>([]);
   const navigate = useNavigate();
   const [buyModal, setBuyModal] = useState<{ open: boolean, screeningId: number | null }>({ open: false, screeningId: null });
-  const [price, setPrice] = useState<number>(2000); // alapértelmezett jegyár
   const { token } = useAuth();
+  const { role } = useContext(AuthContext);
 
   useEffect(() => {
     api.Screenings.getScreenings().then(res => {
@@ -31,7 +32,7 @@ const Screenings = () => {
       }
       const ticket: ITicketPurchase = {
         screeningId: buyModal.screeningId,
-        price: price,
+        price: 2000, // fix ár
         userId: userId ?? undefined
       };
       await purchaseTicket(ticket);
@@ -75,35 +76,47 @@ const Screenings = () => {
       dataIndex: 'availableSeats',
       key: 'availableSeats',
     },
-    {
-      title: 'Műveletek',
-      key: 'actions',
-      render: (_: any, record: IScreenings) => (
-        <>
-          <Button onClick={() => navigate(`${record.id}`)} type="primary" style={{ marginRight: 8 }}>
-            Módosítás
-          </Button>
-          <Button onClick={() => setBuyModal({ open: true, screeningId: record.id })} type="default" style={{ marginRight: 8 }}>
-            Jegyvásárlás
-          </Button>
-          <Popconfirm
-            title="Biztosan törlöd ezt a vetítést?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Igen"
-            cancelText="Mégse"
-          >
-            <Button danger>Törlés</Button>
-          </Popconfirm>
-        </>
-      ),
-    },
+    // Csak ha nem pénztáros, jelenjen meg a műveletek oszlop
+    ...(role !== 'Cashier' ? [
+      {
+        title: 'Műveletek',
+        key: 'actions',
+        render: (_: any, record: IScreenings) => (
+          <>
+            {role === 'Admin' && (
+              <>
+                <Button onClick={() => navigate(`${record.id}`)} type="primary" style={{ marginRight: 8 }}>
+                  Módosítás
+                </Button>
+                <Popconfirm
+                  title="Biztosan törlöd ezt a vetítést?"
+                  onConfirm={() => handleDelete(record.id)}
+                  okText="Igen"
+                  cancelText="Mégse"
+                >
+                  <Button danger>Törlés</Button>
+                </Popconfirm>
+              </>
+            )}
+            {/* Admin ne tudjon magának jegyet venni */}
+            {role !== 'Admin' && (
+              <Button onClick={() => setBuyModal({ open: true, screeningId: record.id })} type="default" style={{ marginRight: 8 }}>
+                Jegyvásárlás
+              </Button>
+            )}
+          </>
+        ),
+      }
+    ] : [])
   ];
 
   return (
     <div>
-      <Button type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
-        Új vetítés hozzáadása
-      </Button>
+      {role === 'Admin' && (
+        <Button type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
+          Új vetítés hozzáadása
+        </Button>
+      )}
       <Table dataSource={items} columns={columns} rowKey="id" pagination={false} />
       <Modal
         title="Jegyvásárlás"
@@ -113,8 +126,7 @@ const Screenings = () => {
         okText="Vásárlás"
         cancelText="Mégse"
       >
-        <div>Jegy ára:</div>
-        <InputNumber min={1} value={price} onChange={v => setPrice(Number(v))} /> Ft
+        <div>Jegy ára: <b>2000 Ft</b></div>
       </Modal>
     </div>
   );

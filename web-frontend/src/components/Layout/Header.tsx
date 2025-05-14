@@ -1,5 +1,5 @@
-import {Box, Burger, Flex, Image} from "@mantine/core";
-import UserMenuDropdown from "./UserMenuDropdown.tsx";
+import {Burger, Flex} from "@mantine/core";
+import UserMenuDropdown from "./UserMenuDropdown";
 
 const Header = ({opened, toggle}: any) => {
     return (
@@ -7,9 +7,7 @@ const Header = ({opened, toggle}: any) => {
             justify="space-between"
             style={{display: "flex", alignItems: "center", height: "100%", paddingLeft: '20px', paddingRight: '20px'}}
         >
-            <Box>
-                <UserMenuDropdown/>
-            </Box>
+            <UserMenuDropdown />
             <Burger
                 opened={opened}
                 onClick={toggle}

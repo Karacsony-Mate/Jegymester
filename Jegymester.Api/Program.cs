@@ -70,7 +70,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = "http://localhost:5023/",
             ValidAudience = "http://localhost:5023/",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("brandoburgernyamnyambrandoburgernyamnyam"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("brandoburgernyamnyambrandoburgernyamnyam")),
+            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
         };
     });
 

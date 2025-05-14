@@ -71,7 +71,7 @@ export function NavbarMinimal({toggle}: any) {
             icon: IconTicket,
             label: "Jegyek",
             url: "my-tickets",
-            roles: ['Customer', 'Admin', 'Cashier']
+            roles: ['Customer']
         },
         {
             icon: IconTicket,
@@ -83,13 +83,13 @@ export function NavbarMinimal({toggle}: any) {
             icon: IconTicket,
             label: "Offline jegyvásárlás",
             url: "offline-ticket-purchase",
-            roles: ['Admin', 'Cashier']
+            roles: ['Cashier']
         },
         {
             icon: IconUserCircle,
             label: "Adatok megváltoztatása",
             url: "userform",
-            roles: ['Admin', 'Customer', 'Cashier']
+            roles: ['Customer']
         }
 
     ];
@@ -127,14 +127,6 @@ export function NavbarMinimal({toggle}: any) {
                     {links}
                 </div>
                 <div className={classes.footer} style={{width: !isMobile ? '216px' : '90%'}}>
-                    <NavbarLink
-                        active={location.pathname === '/profile'}
-                        icon={IconUserCircle}
-                        label="Profil"
-                        onClick={() => {
-                            navigate("profile");
-                            toggle();
-                        }} color="grape" />
                     <NavbarLink
                         icon={IconLogout}
                         label={"Kijelentkezés"}

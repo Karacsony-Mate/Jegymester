@@ -13,14 +13,6 @@ const UserMenuDropdown = () => {
 
     const items = [
         {
-            url: 'profile',
-            label: "Profil",
-            onClick: () => {
-                navigate('profile');
-            },
-            icon: IconUserCircle
-        },
-        {
             url: 'logout',
             label: "Kijelentkezés",
             onClick: () => {logout()},

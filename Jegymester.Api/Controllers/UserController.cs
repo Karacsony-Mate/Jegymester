@@ -8,7 +8,6 @@ namespace Jegymester.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -64,7 +63,7 @@ namespace Jegymester.Api.Controllers
 
         //[Authorize]
         [HttpPut("update-profile")]
-        [Authorize(Roles = "Admin,User,Cashier")]
+        [Authorize]
         public async Task<IActionResult> UpdateProfile([FromBody] UserUpdateDto userDto)
         {
             if (!ModelState.IsValid)

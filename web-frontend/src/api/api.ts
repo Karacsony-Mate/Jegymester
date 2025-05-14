@@ -24,8 +24,10 @@ const Movies = {
 };
 
 const User = {
-    changeUserData: (email: string, name: string, phoneNumber: string, roleIds: number[]) =>
-        axiosInstance.put("User/update-profile", { email, name, phoneNumber, roleIds }),
+    registerUser: (name: string, email: string, password: string, phoneNumber: string, roleIds: number[]) =>
+        axiosInstance.post("User/register", { name, email, password, phoneNumber, roleIds }),
+    changeUserData: (name: string, email: string, phoneNumber: string, roleIds: number[]) =>
+        axiosInstance.put("User/update-profile", { name, email, phoneNumber, roleIds }),
 };
 
 const Auth = {
@@ -37,7 +39,9 @@ const Tickets = {
     purchaseTicket: ticketApi.purchaseTicket,
     deleteTicket: ticketApi.deleteTicket,
     getTicketById: ticketApi.getTicketById,
-    purchaseOfflineTicket: ticketApi.purchaseOfflineTicket,
+    purchaseOfflineTicket: (data: any) => axiosInstance.post('/ticket/purchase-offline', data),
+    getAllTickets: ticketApi.getAllTickets,
+    getTicketsByUserId: ticketApi.getTicketsByUserId,
 };
 
 const api = {Screenings, Movies, User, Tickets, Auth};

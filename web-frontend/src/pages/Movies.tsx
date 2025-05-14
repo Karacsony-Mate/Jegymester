@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Table, Button, message, Popconfirm, Spin } from 'antd';
 import { IMovies } from '../interfaces/IMovies.ts';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/api.ts';
+import { AuthContext } from '../context/AuthContext';
 
 const Movies: React.FC = () => {
   const [items, setItems] = useState<IMovies[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { role } = useContext(AuthContext);
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -57,33 +59,36 @@ const Movies: React.FC = () => {
       dataIndex: 'genre',
       key: 'genre',
     },
-    {
-      title: 'Műveletek',
-      key: 'actions',
-      render: (_: any, record: IMovies) => (
-        <>
-          <Button type="primary" onClick={() => navigate(`${record.id}`)} style={{ marginRight: 8 }}>
-            Módosítás
-          </Button>
-          <Popconfirm
-            title="Biztosan törlöd?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Igen"
-            cancelText="Mégse"
-          >
-            <Button danger>Törlés</Button>
-          </Popconfirm>
-        </>
-      ),
-    },
+    ...(role === 'Admin' ? [
+      {
+        title: 'Műveletek',
+        key: 'actions',
+        render: (_: any, record: IMovies) => (
+          <>
+            <Button type="primary" onClick={() => navigate(`${record.id}`)} style={{ marginRight: 8 }}>
+              Módosítás
+            </Button>
+            <Popconfirm
+              title="Biztosan törlöd?"
+              onConfirm={() => handleDelete(record.id)}
+              okText="Igen"
+              cancelText="Mégse"
+            >
+              <Button danger>Törlés</Button>
+            </Popconfirm>
+          </>
+        ),
+      }
+    ] : [])
   ];
 
   return (
     <div>
-      <Button type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
-        Új film hozzáadása
-      </Button>
-
+      {role === 'Admin' && (
+        <Button type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
+          Új film hozzáadása
+        </Button>
+      )}
       <Spin spinning={loading}>
         <Table
           dataSource={items}

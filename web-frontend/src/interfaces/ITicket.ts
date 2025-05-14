@@ -17,4 +17,6 @@ export interface ITicketPurchaseOffline {
   screeningId: number;
   price: number;
   userId?: number;
+  email?: string; // vendég vásárlásnál kötelező
+  phoneNumber?: string; // vendég vásárlásnál kötelező
 }
