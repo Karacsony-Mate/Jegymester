@@ -31,7 +31,7 @@ const UserForm = () => {
     const submit = async () => {
     try {
         const { name, email, phoneNumber } = form.values;
-        const response = await api.User.changeUserData(email, name, phoneNumber, [0]); // Assuming role ID 0
+        const response = await api.User.changeUserData(email, name, phoneNumber, [3]); // Assuming role ID 0
         console.log("User data updated successfully:", response.data);
         alert("Siker!"); // Show success message
     } catch (error) {
