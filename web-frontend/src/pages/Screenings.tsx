@@ -1,18 +1,17 @@
-import { Button, Card, Table } from '@mantine/core';
-import { useEffect, useState } from "react";
-import api from '../api/api.ts';
-import { IScreenings } from '../interfaces/IScreenings.ts';
-import formatDateTime from '../interfaces/DateTime.tsx';
+import React, { useEffect, useState } from 'react';
+import { IScreenings } from '../interfaces/IScreenings';
 import { useNavigate } from 'react-router-dom';
 import { purchaseTicket } from '../api/tickets';
 import { ITicketPurchase } from '../interfaces/ITicket';
-import { message, Modal, InputNumber } from 'antd';
+import { message, Modal, InputNumber, Table as AntTable, Button as AntButton, Popconfirm } from 'antd';
+import api from '../api/api';
+import formatDateTime from '../interfaces/DateTime';
 
 const Screenings = () => {
   const [items, setItems] = useState<IScreenings[]>([]);
   const navigate = useNavigate();
-  const [buyModal, setBuyModal] = useState<{ open: boolean, screeningId: number | null }>({ open: false, screeningId: null });
-  const [price, setPrice] = useState<number>(2000); // alapértelmezett jegyár
+  const [buyModal, setBuyModal] = useState<{ open: boolean; screeningId: number | null }>({ open: false, screeningId: null });
+  const [price, setPrice] = useState<number>(2000);
 
   useEffect(() => {
     api.Screenings.getScreenings().then(res => {
@@ -25,7 +24,7 @@ const Screenings = () => {
     try {
       const ticket: ITicketPurchase = {
         screeningId: buyModal.screeningId,
-        price: price
+        price: price,
       };
       await purchaseTicket(ticket);
       message.success('Jegy sikeresen megvásárolva!');
@@ -35,47 +34,82 @@ const Screenings = () => {
     }
   };
 
-  const rows = items.map((element) => (
-    <Table.Tr key={element.id}>
-      <Table.Td>{element.movieTitle}</Table.Td>
-      <Table.Td>{formatDateTime(element.dateTime)}</Table.Td>
-      <Table.Td>{element.location}</Table.Td>
-      <Table.Td>{element.availableSeats}</Table.Td>
-      <Table.Td>
-        <Button onClick={() => navigate(`${element.id}`)} color='dark'>Módosítás</Button>
-        <Button ml={8} color='teal' onClick={() => setBuyModal({ open: true, screeningId: element.id })}>Jegyvásárlás</Button>
-      </Table.Td>
-    </Table.Tr>
-  ));
+  const handleDelete = async (id: number) => {
+    try {
+      await api.Screenings.deleteScreeningById(id);
+      setItems(prev => prev.filter(item => item.id !== id));
+      message.success('Vetítés sikeresen törölve!');
+    } catch (error) {
+      message.error('Hiba történt a vetítés törlése során!');
+      console.error(error);
+    }
+  };
 
-  return <div>
-    <button onClick={() => navigate('create')}>Új vetítés hozzáadása</button>
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Movie Title</Table.Th>
-            <Table.Th>Screening date</Table.Th>
-            <Table.Th>Room</Table.Th>
-            <Table.Th>Seats Left</Table.Th>
-            <Table.Th>Műveletek</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>{rows}</Table.Tbody>
-      </Table>
-    </Card>
-    <Modal
-      title="Jegyvásárlás"
-      open={buyModal.open}
-      onOk={handleBuyTicket}
-      onCancel={() => setBuyModal({ open: false, screeningId: null })}
-      okText="Vásárlás"
-      cancelText="Mégse"
-    >
-      <div>Jegy ára:</div>
-      <InputNumber min={1} value={price} onChange={v => setPrice(Number(v))} /> Ft
-    </Modal>
-  </div>
-}
+  const columns = [
+    {
+      title: 'Film címe',
+      dataIndex: 'movieTitle',
+      key: 'movieTitle',
+    },
+    {
+      title: 'Vetítés dátuma',
+      dataIndex: 'dateTime',
+      key: 'dateTime',
+      render: (text: string) => formatDateTime(text),
+    },
+    {
+      title: 'Helyszín',
+      dataIndex: 'location',
+      key: 'location',
+    },
+    {
+      title: 'Szabad helyek',
+      dataIndex: 'availableSeats',
+      key: 'availableSeats',
+    },
+    {
+      title: 'Műveletek',
+      key: 'actions',
+      render: (_: any, record: IScreenings) => (
+        <>
+          <AntButton onClick={() => navigate(`${record.id}`)} type="primary" style={{ marginRight: 8 }}>
+            Módosítás
+          </AntButton>
+          <AntButton onClick={() => setBuyModal({ open: true, screeningId: record.id })} type="default" style={{ marginRight: 8 }}>
+            Jegyvásárlás
+          </AntButton>
+          <Popconfirm
+            title="Biztosan törlöd ezt a vetítést?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Igen"
+            cancelText="Mégse"
+          >
+            <AntButton danger>Törlés</AntButton>
+          </Popconfirm>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <AntButton type="primary" onClick={() => navigate('create')} style={{ marginBottom: 16 }}>
+        Új vetítés hozzáadása
+      </AntButton>
+      <AntTable dataSource={items} columns={columns} rowKey="id" pagination={false} />
+      <Modal
+        title="Jegyvásárlás"
+        open={buyModal.open}
+        onOk={handleBuyTicket}
+        onCancel={() => setBuyModal({ open: false, screeningId: null })}
+        okText="Vásárlás"
+        cancelText="Mégse"
+      >
+        <div>Jegy ára:</div>
+        <InputNumber min={1} value={price} onChange={v => setPrice(Number(v))} /> Ft
+      </Modal>
+    </div>
+  );
+};
 
 export default Screenings;

@@ -1,7 +1,6 @@
-import { Button, Card, Group, NumberInput, Select, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Form, Input, InputNumber, Select, Space, message } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from "../api/api";
 import { IMovies } from "../interfaces/IMovies";
 import { ICreateMovies } from "../interfaces/ICreateMovies";
@@ -13,23 +12,8 @@ interface IMovieForm {
 const MovieForm = ({ isCreate }: IMovieForm) => {
   const { id } = useParams(); // csak akkor van értéke, ha szerkesztésről van szó
   const [movies, setMovies] = useState<IMovies[]>([]);
-
-  const form = useForm({
-    initialValues: {
-        id: 0,
-        title: '',
-        duration: 0,
-        genre: '',
-        description: ''
-    },
-
-    validate: {
-        title: (value) => (value.length > 0 ? null : 'Válassz filmet'),
-        description: (value) => (value.length >= 10 ? null : 'Túl rövid leírás'),
-        genre: (value) => (value.length > 0 ? null : 'Add meg a témát'),
-        duration: (value) => (value > 0 ? null : 'Add meg a film hosszát'),
-    },
-  });
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   // Filmek betöltése
   useEffect(() => {
@@ -43,7 +27,7 @@ const MovieForm = ({ isCreate }: IMovieForm) => {
     if (!isCreate && id) {
       api.Movies.getMovieById(Number(id)).then((res) => {
         const movie = res.data;
-        form.setValues({
+        form.setFieldsValue({
           title: movie.title,
           description: movie.description,
           genre: movie.genre,
@@ -51,9 +35,9 @@ const MovieForm = ({ isCreate }: IMovieForm) => {
         });
       });
     }
-  }, [isCreate, id]);
+  }, [isCreate, id, form]);
 
-  const handleSubmit = (values: typeof form.values) => {
+  const handleSubmit = async (values: any) => {
     const payload: ICreateMovies = {
       title: values.title,
       description: values.description,
@@ -61,56 +45,76 @@ const MovieForm = ({ isCreate }: IMovieForm) => {
       duration: values.duration,
     };
 
-    if (isCreate) {
-      api.Movies.createMovie(payload).then(() => {
-        alert("Film sikeresen létrehozva!");
-      });
-    } else if (id) {
-      api.Movies.updateMovie(Number(id), payload).then(() => {
-        alert("Film sikeresen frissítve!");
-      });
+    try {
+      if (isCreate) {
+        await api.Movies.createMovie(payload);
+        message.success("Film sikeresen létrehozva!");
+      } else if (id) {
+        await api.Movies.updateMovie(Number(id), payload);
+        message.success("Film sikeresen frissítve!");
+      }
+      navigate('/app/movies'); // Redirect after save/update
+    } catch (error) {
+      message.error("Hiba történt a film adatainak mentése közben.");
     }
   };
 
   return (
     <Card>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput
-          withAsterisk
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        initialValues={{
+          title: '',
+          description: '',
+          genre: '',
+          duration: 0,
+        }}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+      >
+        <Form.Item
           label="Cím"
-          placeholder="Pl. A Gyűrűk Ura"
-          {...form.getInputProps('title')}
-        />
+          name="title"
+          rules={[{ required: true, message: 'Válassz filmet' }]}
+        >
+          <Input placeholder="Pl. A Gyűrűk Ura" />
+        </Form.Item>
 
-        <TextInput
-          withAsterisk
+        <Form.Item
           label="Leírás"
-          placeholder="Hol volt, hol nem volt..."
-          {...form.getInputProps('description')}
-        />
+          name="description"
+          rules={[{ required: true, message: 'Túl rövid leírás', min: 10 }]}
+        >
+          <Input.TextArea placeholder="Hol volt, hol nem volt..." />
+        </Form.Item>
 
-        <TextInput
-          withAsterisk
+        <Form.Item
           label="Téma"
-          placeholder="Pl. Fantasy"
-          {...form.getInputProps('genre')}
-        />
+          name="genre"
+          rules={[{ required: true, message: 'Add meg a témát' }]}
+        >
+          <Input placeholder="Pl. Fantasy" />
+        </Form.Item>
 
-        <NumberInput
-          withAsterisk
+        <Form.Item
           label="Hossz (perc)"
-          placeholder="Pl. 120"
-          min={10}
-          value={form.values.duration}
-          onChange={(value) => form.setFieldValue('duration', Number(value) ?? 0)}
-          error={form.errors.duration}
-        />
+          name="duration"
+          rules={[{ required: true, message: 'Add meg a film hosszát' }]}
+        >
+          <InputNumber
+            min={10}
+            style={{ width: '100%' }}
+            placeholder="Pl. 120"
+          />
+        </Form.Item>
 
-
-        <Group justify="flex-end" mt="md">
-          <Button type="submit">{isCreate ? "Létrehozás" : "Mentés"}</Button>
-        </Group>
-      </form>
+        <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+          <Button type="primary" htmlType="submit">
+            {isCreate ? "Létrehozás" : "Mentés"}
+          </Button>
+        </Form.Item>
+      </Form>
     </Card>
   );
 };
