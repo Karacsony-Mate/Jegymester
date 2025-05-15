@@ -39,6 +39,16 @@ namespace Jegymester.Services
 
         public async Task<UserDto> RegisterAsync(UserRegisterDto userDto)
         {
+            if (await _context.Users.AnyAsync(u => u.Email == userDto.Email))
+            {
+                throw new InvalidOperationException("Email already exists.");
+            }
+
+            if (await _context.Users.AnyAsync(u => u.PhoneNumber == userDto.PhoneNumber))
+            {
+                throw new InvalidOperationException("Phonenumber already linked to an account.");
+            }
+
             var user = _mapper.Map<User>(userDto);
             user.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password).ToString();
             user.Roles = new List<Role>();
@@ -132,6 +142,16 @@ namespace Jegymester.Services
                 throw new KeyNotFoundException("User not found.");
             }
 
+            if (await _context.Users.AnyAsync(u => u.Email == userDto.Email && u.Id != userId))
+            {
+                throw new InvalidOperationException("Email already exists.");
+            }
+
+            if (await _context.Users.AnyAsync(u => u.PhoneNumber == userDto.PhoneNumber && u.Id != userId))
+            {
+                throw new InvalidOperationException("Phonenumber already in use.");
+            }
+
             _mapper.Map(userDto, user);
 
             if (userDto.RoleIds != null && userDto.RoleIds.Any())
@@ -146,7 +166,7 @@ namespace Jegymester.Services
                         user.Roles.Add(existingRole);
                     }
                 }
-            }
+            } 
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();

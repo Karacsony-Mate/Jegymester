@@ -1,5 +1,7 @@
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import "@mantine/notifications/styles.css"
 import { theme } from "./theme";
 import {BrowserRouter} from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
@@ -13,6 +15,7 @@ export default function App() {
   const [role, setRole]=useState(localStorage.getItem(roleKeyName));
 
   return <MantineProvider theme={theme}>
+    <Notifications/>
     <BrowserRouter>
       <AuthContext.Provider value={{ token, setToken, email, setEmail, role, setRole }}>
         <Routing/>

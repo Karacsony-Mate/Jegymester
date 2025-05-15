@@ -11,9 +11,6 @@ import {useForm} from "@mantine/form";
 import {useNavigate} from "react-router-dom";
 import AuthContainer from "../components/AuthContainer.tsx";
 import useAuth from "../hooks/useAuth.tsx";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import RegisterForm from "./pages/RegisterForm";
-
 
 const Login = () => {
     const {login} = useAuth();
@@ -27,7 +24,7 @@ const Login = () => {
 
         validate: {
             email: (val: string) => (/^\S+@\S+$/.test(val) ? null : 'Érvénytelen e-mail cím'),
-            password: (val: string) => (val.length <= 6 ? 'A jelszónak 6 karakter hosszúnak kell lennie.' : null),
+            password: (val: string) => (val.length < 8 ? 'A jelszónak 8 karakter hosszúnak kell lennie.' : null),
         },
     });
 

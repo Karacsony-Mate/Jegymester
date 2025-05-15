@@ -1,12 +1,12 @@
 import {
     Stack,
     TextInput,
-    PasswordInput,
     Group,
     Button,
     Divider,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
 import AuthContainer from "../components/AuthContainer.tsx";
 import api from "../api/api";
@@ -33,15 +33,26 @@ const UserForm = () => {
     const submit = async () => {
     try {
         const { name, email, phoneNumber } = form.values;
-        const response = await api.User.changeUserData(name, email, phoneNumber, [1]); // Assuming role ID 0
-        console.log("User data updated successfully:", response.data);
-        alert("Siker!"); // Show success message
+        await api.User.changeUserData(name, email, phoneNumber, [1]); // Assuming role ID 1
+        showNotification({
+            title: 'Siker',
+            message: "Sikeres adat frissítés, kijelentkeztetés",
+            color: "green",
+            autoClose: 2000
+        });// Show success message
+        
         // Sikeres adatváltoztatás után kijelentkeztet és login oldalra dob
         logout();
         navigate("/login");
-    } catch (error) {
-        console.error("Error updating user data:", error);
-        alert("Hiba történt az adatok frissítése közben."); // Show error message
+    } catch (error: any) {
+        var messageStr = "Sikertelen adatváltoztatás: ";
+        messageStr += error.response.data
+        showNotification({
+            title: 'Hiba',
+            message: messageStr,
+            color: "red",
+            autoClose: 5000
+        });
     }
 };
 

@@ -13,6 +13,7 @@ import { showNotification } from "@mantine/notifications"; // Importálás
 //import axiosInstance from "../utils/axiosInstance"; // Győződj meg róla, hogy az axiosInstance helyesen van importálva
 import AuthContainer from "../components/AuthContainer.tsx";
 import axiosInstance from "../api/axios.config.ts";
+import api from "../api/api.ts"
 
 const RegisterForm = () => {
     const navigate = useNavigate();
@@ -27,20 +28,15 @@ const RegisterForm = () => {
 
         validate: {
             email: (val: string) => (/^\S+@\S+$/.test(val) ? null : 'Érvénytelen e-mail cím'),
-            password: (val: string) => (val.length <= 6 ? 'A jelszónak 6 karakter hosszúnak kell lennie.' : null),
-            name: (val: string) => (val.length <= 2 ? 'A névnek legalább 2 karakter hosszúnak kell lennie.' : null),
+            password: (val: string) => (val.length < 8 ? 'A jelszónak 8 karakter hosszúnak kell lennie.' : null),
+            name: (val: string) => (val.length < 2 ? 'A névnek legalább 2 karakter hosszúnak kell lennie.' : null),
         },
     });
 
-    const registerUser = (name: string, email: string, password: string, phoneNumber: string, roleIds: number[]) => {
-        return axiosInstance.post("User/register", { name, email, password, phoneNumber, roleIds });
-    };
-
     const submit = async () => {
         const { name, email, password, phonenumber } = form.values;
-
-        try {
-            await registerUser(name, email, password, phonenumber, [1]);
+         try {
+            await api.User.registerUser(name, email, password, phonenumber, [1]);
             showNotification({
                 title: 'Sikeres regisztráció',
                 message: 'A regisztráció sikeresen megtörtént! Hamarosan átirányítunk a bejelentkezéshez.',
@@ -52,8 +48,8 @@ const RegisterForm = () => {
             }, 2000);
         } catch (error: any) {
             let msg = 'A regisztráció nem sikerült. Kérlek, próbáld újra!';
-            if (error?.response?.data?.errors) {
-                msg = Object.values(error.response.data.errors).flat().join(' ');
+            if (error?.response?.data) {
+                msg = Object.values(error.response.data).flat().join('');
             } else if (error?.response?.data?.message) {
                 msg = error.response.data.message;
             }
@@ -65,7 +61,7 @@ const RegisterForm = () => {
             });
         }
     };
-
+    
     return (
         <AuthContainer>
             <div>

@@ -3,9 +3,7 @@ import {AuthContext} from "../context/AuthContext.tsx";
 import {emailKeyName, emailTokenKey,  tokenKeyName, roleKeyName} from "../constants/constants.ts";
 import {jwtDecode, JwtPayload} from "jwt-decode";
 import api from "../api/api.ts";
-
-
-
+import { showNotification } from "@mantine/notifications";
 
 interface CustomJwtPayload extends JwtPayload {
     [key: string]: any; // Allowing dynamic keys if necessary
@@ -26,8 +24,20 @@ const useAuth = () => {
             setToken(tokenFromBE); localStorage.setItem(tokenKeyName, tokenFromBE);
             setEmail(email); localStorage.setItem(emailKeyName, email);
             //console.log({tokenFromBE});
+            
+            showNotification({
+                title: 'Siker',
+                message: "Sikeres bejelentkezés",
+                color: "green",
+                autoClose: 2000
+            });
         },error => {
-            alert('Hibás jelszó vagy felhasználónév');
+            showNotification({
+                title: 'Hibás bejelentkezési adatok',
+                message: error.response.data,
+                color: "red",
+                autoClose: 3000
+            });
         }
     
     );
